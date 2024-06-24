@@ -13,12 +13,22 @@ from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
 from utils.slam_utils import get_loss_tracking, get_median_depth
+#from depth_anything.dpt import DepthAnything
+#from depth_anything.util.transform import Resize, NormalizeImage, PrepareForNet
+from PIL import Image
+import cv2
+import torch.nn.functional as F
+from scipy.optimize import minimize_scalar
+from scipy.optimize import minimize
+from scipy.optimize import differential_evolution
 
 
 class FrontEnd(mp.Process):
-    def __init__(self, config):
+    def __init__(self, config, depth_anything, transform):
         super().__init__()
         self.config = config
+        self.depth_anything = depth_anything
+        self.transform = transform
         self.background = None
         self.pipeline_params = None
         self.frontend_queue = None
@@ -32,6 +42,7 @@ class FrontEnd(mp.Process):
         self.iteration_count = 0
         self.occ_aware_visibility = {}
         self.current_window = []
+        self.DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.reset = True
         self.requested_init = False
@@ -54,12 +65,88 @@ class FrontEnd(mp.Process):
         self.window_size = self.config["Training"]["window_size"]
         self.single_thread = self.config["Training"]["single_thread"]
 
+    def depth_anything_depth(self, image, depth_gt, cur_frame_idx):
+        depth_gt = depth_gt * 5000.0
+        #print('image shape', image.shape)
+        h, w = image.shape[:2]
+        image = self.transform({'image': image})['image']
+        #print('image', image.shape)
+        image = torch.from_numpy(image).unsqueeze(0).to(self.DEVICE)
+        #print('image1', image.shape)
+        with torch.no_grad():
+            depth = self.depth_anything(image)
+        #print('depth', depth.shape)
+        prediction = F.interpolate(depth[None], (h, w), mode='bilinear', align_corners=False)[0, 0]
+        #print('prediction shape', prediction.shape)
+        
+        sigma_color=150
+        sigma_space=150
+        output = prediction.squeeze().cpu().numpy()
+        depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
+        #optimal_scale, optimal_translation = 13238.90159861579, 3951.3636687612507
+        predicted_depth = np.zeros_like(depthmap)
+        non_zero_mask = depthmap != 0
+        predicted_depth[non_zero_mask] = 1 / depthmap[non_zero_mask]
+        png_depth_scale = 5000.0
+        def l1_loss(params):
+            scale, translation = params
+            scaled_and_translated_predicted = predicted_depth * scale + translation
+            
+            # Create a mask where GT depth values are not zero
+            mask = depth_gt != 0
+            
+            # Apply the mask to both GT and predicted depth data
+            valid_gt_depth = depth_gt[mask] / png_depth_scale
+            valid_predicted_depth = scaled_and_translated_predicted[mask] / png_depth_scale
+
+            # Return the mean of absolute differences where GT depth is not zero
+            return np.mean(np.abs(valid_gt_depth - valid_predicted_depth))
+        
+        # Set bounds for scale and translation
+        #bounds = [(0,50000), (-5000, 5000)]
+        bounds = [(0,100000), (-5000, 10000)]
+
+        # Use Differential Evolution to optimize the scale and translation
+        result = differential_evolution(l1_loss, bounds)
+        
+        
+        # Check the results
+        optimal_scale, optimal_translation = result.x
+        print("Optimal scale:", optimal_scale)
+        print("Optimal translation:", optimal_translation)
+        depth = (predicted_depth * optimal_scale + optimal_translation).astype("uint16") / 5000.0
+        # Compute the L1 loss at the optimal scale and translation
+        optimal_l1_loss = l1_loss(result.x)
+        print("L1 loss at optimal scale and translation:", optimal_l1_loss)
+        #cv2.imwrite('./pred_depth/' + str(cur_frame_idx) + '.png', depth)
+        return depth
+        
+        
+        
+    
     def add_new_keyframe(self, cur_frame_idx, depth=None, opacity=None, init=False):
         rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
         self.kf_indices.append(cur_frame_idx)
         viewpoint = self.cameras[cur_frame_idx]
         gt_img = viewpoint.original_image.cuda()
+        input_depth_anything = gt_img.permute(1, 2, 0).cpu().numpy()
+        
         valid_rgb = (gt_img.sum(dim=0) > rgb_boundary_threshold)[None]
+        #print('valid_rgb shape', valid_rgb.shape)
+        
+        if self.monocular:
+            # use the observed depth
+            initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
+            #print('initial_depth shape', initial_depth.shape)
+            initial_depth[~valid_rgb.cpu()] = 0  # Ignore the invalid rgb pixels
+            #print('output_shape', initial_depth[0].numpy().shape)
+            #print(initial_depth[0].numpy())
+            print(np.max(initial_depth[0].numpy()))
+            gt_depth = initial_depth[0].numpy()
+            depth = self.depth_anything_depth(input_depth_anything, gt_depth, cur_frame_idx)
+            print('depth', np.max(depth))
+            return depth
+        '''
         if self.monocular:
             if depth is None:
                 initial_depth = 2 * torch.ones(1, gt_img.shape[1], gt_img.shape[2])
@@ -102,10 +189,18 @@ class FrontEnd(mp.Process):
 
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
+        '''
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
+        #print('initial_depth shape', initial_depth.shape)
         initial_depth[~valid_rgb.cpu()] = 0  # Ignore the invalid rgb pixels
-        return initial_depth[0].numpy()
+        #print('output_shape', initial_depth[0].numpy().shape)
+        #print(initial_depth[0].numpy())
+        print(np.max(initial_depth[0].numpy()))
+        gt_depth = initial_depth[0].numpy()
+        depth = self.depth_anything_depth(input_depth_anything, gt_depth, cur_frame_idx)
+        print('depth', np.max(depth))
+        return depth
 
     def initialize(self, cur_frame_idx, viewpoint):
         self.initialized = not self.monocular
