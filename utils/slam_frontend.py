@@ -133,7 +133,7 @@ class FrontEnd(mp.Process):
         
         valid_rgb = (gt_img.sum(dim=0) > rgb_boundary_threshold)[None]
         #print('valid_rgb shape', valid_rgb.shape)
-        
+        '''
         if self.monocular:
             # use the observed depth
             initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
@@ -147,6 +147,7 @@ class FrontEnd(mp.Process):
             print('depth', np.max(depth))
             return depth
         '''
+        print('monocular', self.monocular)
         if self.monocular:
             if depth is None:
                 initial_depth = 2 * torch.ones(1, gt_img.shape[1], gt_img.shape[2])
@@ -189,7 +190,7 @@ class FrontEnd(mp.Process):
 
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
-        '''
+        
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
         #print('initial_depth shape', initial_depth.shape)

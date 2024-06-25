@@ -71,7 +71,7 @@ class SLAM:
 
         self.config["Results"]["save_dir"] = save_dir
         self.config["Training"]["monocular"] = self.monocular
-        encoder = 'vitb' # can also be 'vitb' or 'vitl'
+        encoder = 'vits' # can also be 'vitb' or 'vitl'
         DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.depth_anything = DepthAnything.from_pretrained('LiheYoung/depth_anything_{}14'.format(encoder)).to(DEVICE).eval()
     
