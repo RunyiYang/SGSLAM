@@ -93,11 +93,9 @@ class FrontEnd(mp.Process):
                 )
                 #print('number of zeros of invalid_depth_mask', np.sum(invalid_depth_mask == 0))
                 depth[invalid_depth_mask] = median_depth
-                #initial_depth = depth + torch.randn_like(depth) * torch.where(
-                #    invalid_depth_mask, std * 0.5, std * 0.2
-                #)
-                initial_depth = depth
-                
+                initial_depth = depth + torch.randn_like(depth) * torch.where(
+                    invalid_depth_mask, std * 0.5, std * 0.2
+                )
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
                 initial_depth = initial_depth.cpu().numpy()[0]
                 print('number of zeros of initial_depth', np.sum(initial_depth == 0))
@@ -419,7 +417,7 @@ class FrontEnd(mp.Process):
                     continue
                 rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
                 viewpoint = Camera.init_from_dataset(
-                    self.dataset, cur_frame_idx, projection_matrix, rgb_boundary_threshold, self.depth_anything, self.DEVICE, self.transform
+                    self.dataset, cur_frame_idx, projection_matrix, rgb_boundary_threshold, self.depth_anything, self.DEVICE, self.transform, self.config
                 )
                 viewpoint.compute_grad_mask(self.config)
 

@@ -68,7 +68,7 @@ class Camera(nn.Module):
         self.projection_matrix = projection_matrix.to(device=device)
         
     @staticmethod
-    def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, DEVICE, transform):
+    def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, DEVICE, transform, config):
         gt_color, gt_depth, gt_pose = dataset[idx]
         #print('gt_color', gt_color.shape)
         input_depth_anything = gt_color.permute(1, 2, 0).cpu().numpy()
@@ -80,8 +80,9 @@ class Camera(nn.Module):
         #print('input_depth_anything', input_depth_anything.shape)
         #print('gt_depth_input', gt_depth.shape)
         
-        def depth_anything_depth(image, depth_gt, cur_frame_idx):
-            depth_gt = depth_gt * 5000.0
+        def depth_anything_depth(image, depth_gt, cur_frame_idx, config):
+            png_depth_scale = config["Dataset"]["dataset_path"].split("/")
+            depth_gt = depth_gt * png_depth_scale
             #print('image shape', image.shape)
             h, w = image.shape[:2]
             image = transform({'image': image})['image']
@@ -92,7 +93,7 @@ class Camera(nn.Module):
             with torch.no_grad():
                 depth = depth_anything(image)
             time2 = time.time()
-            print('depth_anything time', time2 - time1)
+            #print('depth_anything time', time2 - time1)
             #print('depth', depth.shape)
             prediction = F.interpolate(depth[None], (h, w), mode='bilinear', align_corners=False)[0, 0]
             #print('prediction shape', prediction.shape)
@@ -105,7 +106,6 @@ class Camera(nn.Module):
             predicted_depth = np.zeros_like(depthmap)
             non_zero_mask = depthmap != 0
             predicted_depth[non_zero_mask] = 1 / depthmap[non_zero_mask]
-            png_depth_scale = 5000.0
             def l1_loss(params):
                 scale, translation = params
                 scaled_and_translated_predicted = predicted_depth * scale + translation
@@ -135,7 +135,7 @@ class Camera(nn.Module):
             depth = (predicted_depth * optimal_scale + optimal_translation).astype("uint16") / 5000.0
             # Compute the L1 loss at the optimal scale and translation
             optimal_l1_loss = l1_loss(result.x)
-            print("L1 loss at optimal scale and translation:", optimal_l1_loss)
+            #print("L1 loss at optimal scale and translation:", optimal_l1_loss)
             #cv2.imwrite('./pred_depth/' + str(cur_frame_idx) + '.png', depth)
             return depth
         
