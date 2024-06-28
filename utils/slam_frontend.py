@@ -13,8 +13,6 @@ from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
 from utils.slam_utils import get_loss_tracking, get_median_depth, get_median_depth_da
-#from depth_anything.dpt import DepthAnything
-#from depth_anything.util.transform import Resize, NormalizeImage, PrepareForNet
 from PIL import Image
 import cv2
 import torch.nn.functional as F
@@ -37,6 +35,7 @@ class FrontEnd(mp.Process):
         self.q_vis2main = None
 
         self.initialized = False
+        self.render_pkg_input = 0
         self.kf_indices = []
         self.monocular = config["Training"]["monocular"]
         self.iteration_count = 0
@@ -92,10 +91,11 @@ class FrontEnd(mp.Process):
                     invalid_depth_mask, ~valid_mask
                 )
                 #print('number of zeros of invalid_depth_mask', np.sum(invalid_depth_mask == 0))
-                depth[invalid_depth_mask] = median_depth
-                initial_depth = depth + torch.randn_like(depth) * torch.where(
-                    invalid_depth_mask, std * 0.5, std * 0.2
-                )
+                #depth[invalid_depth_mask] = median_depth
+                initial_depth = depth
+                #initial_depth = depth + torch.randn_like(depth) * torch.where(
+                #    invalid_depth_mask, std * 0.5, std * 0.2
+                #)
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
                 initial_depth = initial_depth.cpu().numpy()[0]
                 print('number of zeros of initial_depth', np.sum(initial_depth == 0))
@@ -417,7 +417,7 @@ class FrontEnd(mp.Process):
                     continue
                 rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
                 viewpoint = Camera.init_from_dataset(
-                    self.dataset, cur_frame_idx, projection_matrix, rgb_boundary_threshold, self.depth_anything, self.DEVICE, self.transform, self.config
+                    self.dataset, cur_frame_idx, projection_matrix, rgb_boundary_threshold, self.depth_anything, self.DEVICE, self.transform, self.config, self.render_pkg_input
                 )
                 viewpoint.compute_grad_mask(self.config)
 
@@ -435,7 +435,7 @@ class FrontEnd(mp.Process):
 
                 # Tracking
                 render_pkg = self.tracking(cur_frame_idx, viewpoint)
-
+                self.render_pkg_input = render_pkg
                 current_window_dict = {}
                 current_window_dict[self.current_window[0]] = self.current_window[1:]
                 keyframes = [self.cameras[kf_idx] for kf_idx in self.current_window]
