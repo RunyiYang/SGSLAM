@@ -1,5 +1,5 @@
 import torch
-
+import numpy as np
 
 def image_gradient(image):
     # Compute image gradient using Scharr Filter
@@ -55,8 +55,8 @@ def depth_reg(depth, gt_image, huber_eps=0.1, mask=None):
 
 def get_loss_tracking(config, image, depth, opacity, viewpoint, initialization=False):
     image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    if config["Training"]["monocular"]:
-        return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
+    #if config["Training"]["monocular"]:
+    #    return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
     return get_loss_tracking_rgbd(config, image_ab, depth, opacity, viewpoint)
 
 
@@ -93,8 +93,8 @@ def get_loss_mapping(config, image, depth, viewpoint, opacity, initialization=Fa
         image_ab = image
     else:
         image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    if config["Training"]["monocular"]:
-        return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
+    #if config["Training"]["monocular"]:
+    #    return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
     return get_loss_mapping_rgbd(config, image_ab, depth, viewpoint)
 
 
@@ -153,3 +153,40 @@ def get_median_depth_da(depth, opacity=None, mask=None, return_std=False):
     if return_std:
         return valid_depth.median(), valid_depth.std(), valid
     return valid_depth.median()
+
+def l1_loss(params, predicted_depth, depth_gt, png_depth_scale):
+    scale, translation = params
+    scaled_and_translated_predicted = predicted_depth * scale + translation
+    
+    # Create a mask where GT depth values are not zero
+    mask = depth_gt != 0
+    
+    # Apply the mask to both GT and predicted depth data
+    valid_gt_depth = depth_gt[mask] / png_depth_scale
+    valid_predicted_depth = scaled_and_translated_predicted[mask] / png_depth_scale
+    
+    # Calculate the mean of absolute differences where GT depth is not zero
+    loss_map = np.abs(valid_gt_depth - valid_predicted_depth)
+
+    outlier_mask = 0
+    
+    # Return the mean of absolute differences and the outlier mask
+    return np.mean(loss_map), outlier_mask
+
+def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, png_depth_scale):
+    scaled_and_translated_predicted = predicted_depth * scale + translation
+    
+    # Create a mask where GT depth values are not zero
+    mask = depth_gt != 0
+    
+    # Apply the mask to both GT and predicted depth data
+    valid_gt_depth = depth_gt[mask] / png_depth_scale
+    valid_predicted_depth = scaled_and_translated_predicted[mask] / png_depth_scale
+    
+    # Calculate the mean of absolute differences where GT depth is not zero
+    loss_map = np.abs(valid_gt_depth - valid_predicted_depth)
+
+    outlier_mask = 0
+    
+    # Return the mean of absolute differences and the outlier mask
+    return np.mean(loss_map), outlier_mask

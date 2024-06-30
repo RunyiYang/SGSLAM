@@ -261,6 +261,7 @@ class BackEnd(mp.Process):
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
+                        
                         if to_prune is not None and self.monocular:
                             self.gaussians.prune_points(to_prune.cuda())
                             for idx in range((len(current_window))):
@@ -268,6 +269,7 @@ class BackEnd(mp.Process):
                                 self.occ_aware_visibility[current_idx] = (
                                     self.occ_aware_visibility[current_idx][~to_prune]
                                 )
+                        
                         if not self.initialized:
                             self.initialized = True
                             Log("Initialized SLAM")

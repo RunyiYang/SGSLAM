@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from scipy.optimize import differential_evolution
 
 from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2, getWorld2View2
-from utils.slam_utils import image_gradient, image_gradient_mask
+from utils.slam_utils import image_gradient, image_gradient_mask, l1_loss
 
 
 class Camera(nn.Module):
@@ -67,39 +67,31 @@ class Camera(nn.Module):
         )
 
         self.projection_matrix = projection_matrix.to(device=device)
-        
+            
     @staticmethod
     def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, DEVICE, transform, config, render_pkg_input):
         gt_color, gt_depth, gt_pose = dataset[idx]
-        #print('gt_color', gt_color.shape)
         input_depth_anything = gt_color.permute(1, 2, 0).cpu().numpy()
         
-        valid_rgb = (gt_color.sum(dim=0) > rgb_boundary_threshold)[None]
-        #print('valid_rgb shape', valid_rgb.shape)
-        #print('gt_depth shape', gt_depth.shape)
-        gt_depth[~valid_rgb[0].cpu()] = 0  # Ignore the invalid rgb pixels
-        #print('input_depth_anything', input_depth_anything.shape)
-        #print('gt_depth_input', gt_depth.shape)
+        #valid_rgb = (gt_color.sum(dim=0) > rgb_boundary_threshold)[None]
+        #gt_depth[~valid_rgb[0].cpu()] = 0  # Ignore the invalid rgb pixels
         
         def depth_anything_depth(image, depth_gt, cur_frame_idx, config, render_pkg_input):
             png_depth_scale = config["Dataset"]["Calibration"]["depth_scale"]
             depth_gt = depth_gt * png_depth_scale
-            print('depth_gt', np.max(depth_gt / 5000.0))
-            #if render_pkg_input != 0:
-            #    depth_gt = render_pkg_input["depth"].detach().cpu().numpy()[0] * png_depth_scale
-            #print('render depth_gt', np.max(depth_gt / 5000.0))
+            print('depth_gt', np.max(depth_gt / png_depth_scale))
+            if render_pkg_input != 0:
+                depth_gt = render_pkg_input["depth"].detach().cpu().numpy()[0] * png_depth_scale
+            print('render depth_gt', np.max(depth_gt / 5000.0))
             
             h, w = image.shape[:2]
             image_transform = transform({'image': image})['image']
-            #print('image', image.shape)
             image_input = torch.from_numpy(image_transform).unsqueeze(0).to(DEVICE)
-            #print('image1', image.shape)
             time1 = time.time()
             with torch.no_grad():
                 depth = depth_anything(image_input)
             time2 = time.time()
             #print('depth_anything time', time2 - time1)
-            #print('depth', depth.shape)
             
             depth = F.interpolate(depth[None], (h, w), mode='bilinear', align_corners=False)[0, 0]
             depth = (depth - depth.min()) / (depth.max() - depth.min())
@@ -111,38 +103,26 @@ class Camera(nn.Module):
             #predicted_depth = np.zeros_like(depthmap)
             #non_zero_mask = depthmap != 0
             predicted_depth = 1  - depthmap
-            def l1_loss(params):
-                scale, translation = params
-                scaled_and_translated_predicted = predicted_depth * scale + translation
-                
-                # Create a mask where GT depth values are not zero
-                mask = depth_gt != 0
-                
-                # Apply the mask to both GT and predicted depth data
-                valid_gt_depth = depth_gt[mask] / png_depth_scale
-                valid_predicted_depth = scaled_and_translated_predicted[mask] / png_depth_scale
-
-                # Return the mean of absolute differences where GT depth is not zero
-                return np.mean(np.abs(valid_gt_depth - valid_predicted_depth))
-            
             # Set bounds for scale and translation
             #bounds = [(0,50000), (-5000, 5000)]
             bounds = [(0,100000), (-5000, 10000)]
 
             # Use Differential Evolution to optimize the scale and translation
-            result = differential_evolution(l1_loss, bounds)
-            
-            
+            result = differential_evolution(lambda params: l1_loss(params, predicted_depth, depth_gt, png_depth_scale)[0], bounds)
+
             # Check the results
             optimal_scale, optimal_translation = result.x
             print("Optimal scale:", optimal_scale)
             print("Optimal translation:", optimal_translation)
+
+            # Compute the final depth using optimal scale and translation
             depth = (predicted_depth * optimal_scale + optimal_translation).astype("uint16")
-            # Compute the L1 loss at the optimal scale and translation
-            optimal_l1_loss = l1_loss(result.x)
+            print('max predicted depth', np.max(depth))
+            # Compute the L1 loss at the optimal scale and translation and identify outliers
+            optimal_l1_loss, outlier_mask = l1_loss(result.x, predicted_depth, depth_gt, png_depth_scale)
+            
             print("L1 loss at optimal scale and translation:", optimal_l1_loss)
-            print('max pred depth', np.max(depth / 5000.0 ))
-            # Create a composite image
+            
             '''
             fig, ax = plt.subplots(1, 3, figsize=(18, 6))
             im_gt = ax[0].imshow(depth_gt, cmap='gray')
@@ -162,7 +142,7 @@ class Camera(nn.Module):
 
             # Save the figure
             plt.tight_layout()
-            plt.savefig(f'/home/wenxuan/MonoGS/pred_depth_1/combined_{cur_frame_idx}.png')
+            plt.savefig(f'/home/wenxuan/MonoGS/pred_render_depth/combined_{cur_frame_idx}.png')
             plt.close()
             '''
             return depth / png_depth_scale

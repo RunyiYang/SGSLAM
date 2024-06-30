@@ -96,7 +96,7 @@ class FrontEnd(mp.Process):
                 #initial_depth = depth + torch.randn_like(depth) * torch.where(
                 #    invalid_depth_mask, std * 0.5, std * 0.2
                 #)
-                initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
+                #initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
                 initial_depth = initial_depth.cpu().numpy()[0]
                 print('number of zeros of initial_depth', np.sum(initial_depth == 0))
             return initial_depth
@@ -142,10 +142,10 @@ class FrontEnd(mp.Process):
                     initial_depth = depth + torch.randn_like(depth) * torch.where(
                         invalid_depth_mask, std * 0.5, std * 0.2
                     )
-
+            
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
-            '''
+        '''
         
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
