@@ -71,7 +71,13 @@ class FrontEnd(mp.Process):
         gt_img = viewpoint.original_image.cuda()
         
         valid_rgb = (gt_img.sum(dim=0) > rgb_boundary_threshold)[None]
-        
+        '''
+        if self.monocular:
+            initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
+            initial_depth[~valid_rgb.cpu()] = 0  # Ignore the invalid rgb pixels
+            #print('number of zeros of initial_depth', np.sum(initial_depth == 0))
+            return initial_depth[0].numpy()
+        '''
         
         if self.monocular:
             # use the observed depth

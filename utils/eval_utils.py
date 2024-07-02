@@ -135,11 +135,16 @@ def eval_rendering(
             continue
         saved_frame_idx.append(idx)
         frame = frames[idx]
-        gt_image, _, _ = dataset[idx]
-
+        gt_image, _, _, _ = dataset[idx]
+        
         rendering = render(frame, gaussians, pipe, background)["render"]
+        #image = torch.clamp(rendering, 0.0, 1.0)
+        #print('idx', idx)
+        #print('frame', frame)
+        #if frame.exposure_a is not None:
+        #    print('valid')
+        #    image = (torch.exp(frame.exposure_a)) * rendering + frame.exposure_b
         image = torch.clamp(rendering, 0.0, 1.0)
-
         gt = (gt_image.cpu().numpy().transpose((1, 2, 0)) * 255).astype(np.uint8)
         pred = (image.detach().cpu().numpy().transpose((1, 2, 0)) * 255).astype(
             np.uint8
