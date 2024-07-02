@@ -127,9 +127,11 @@ class Camera(nn.Module):
             #optimal_l1_loss, outlier_mask = l1_loss(result.x, depth, depth_gt_disparity, png_depth_scale)
             # Create a mask where GT depth values are not zero
             optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
-            print('optimal_l1_loss', optimal_l1_loss)
-            depth = depth[~outlier_mask]
-            
+            #print('optimal_l1_loss', optimal_l1_loss)
+            #print(outlier_mask.shape)
+            #print(depth.shape)
+            depth = depth * (1 - outlier_mask)
+            #print('median predicted depth', np.median(depth))
             '''
             fig, ax = plt.subplots(1, 4, figsize=(24, 6))
             im_gt = ax[0].imshow(depth_gt, cmap='gray')

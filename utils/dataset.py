@@ -275,7 +275,8 @@ class MonocularDataset(BaseDataset):
             .to(device=self.device, dtype=self.dtype)
         )
         pose = torch.from_numpy(pose).to(device=self.device)
-        return image, depth, pose
+        raw_image = cv2.imread(color_path)
+        return image, depth, pose, raw_image
 
 
 class StereoDataset(BaseDataset):
