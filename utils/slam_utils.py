@@ -209,4 +209,4 @@ def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_
     #print(f"Number of masked outliers: {num_masked_outliers}")
     #print(f"Percentage of masked outliers: {percent_masked_outliers:.2f}%")
     valid_loss_map = loss_map[~outliers_in_non_zero]  # Exclude outliers for mean calculation
-    return np.mean(valid_loss_map), outlier_mask
+    return np.mean(loss_map), outlier_mask
