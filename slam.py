@@ -72,7 +72,7 @@ class SLAM:
 
         self.config["Results"]["save_dir"] = save_dir
         self.config["Training"]["monocular"] = self.monocular
-        encoder = 'vits' # can also be 'vitb' or 'vitl'
+        encoder = 'vitb' # can also be 'vitb' or 'vitl'
         DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
         model_configs = {
         'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]},

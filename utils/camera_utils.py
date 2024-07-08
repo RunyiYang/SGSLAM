@@ -102,6 +102,14 @@ class Camera(nn.Module):
             depth = 1 / (depthmap * optimal_scale + optimal_translation)
             print('median predicted depth', np.median(depth))
             optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+            print('optimal_l1_loss_before_outlier', optimal_l1_loss)
+            depthmap = depthmap * (1 - outlier_mask)
+            depth_gt_disparity = depth_gt_disparity * (1 - outlier_mask)
+            result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt_disparity)[0], bounds)
+            optimal_scale, optimal_translation = result.x
+            depth = 1 / (depthmap * optimal_scale + optimal_translation)
+            print('median predicted depth', np.median(depth))            
+            optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
             print('optimal_l1_loss', optimal_l1_loss)
             depth = depth * (1 - outlier_mask)
             return depth
