@@ -154,26 +154,51 @@ def get_median_depth_da(depth, opacity=None, mask=None, return_std=False):
         return valid_depth.median(), valid_depth.std(), valid
     return valid_depth.median()
 
-def l1_loss(params, predicted_depth, depth_gt):
+def l1_loss(params, predicted_depth, depth_gt, center_fraction=1):
+    """
+    Calculate the L1 loss using a central portion of the depth ground truth.
+    
+    Args:
+    params (tuple): Scale and translation parameters.
+    predicted_depth (np.array): Predicted depth map.
+    depth_gt (np.array): Ground truth depth map.
+    center_fraction (float): Fraction of the central area of the depth map to consider (0 < center_fraction <= 1).
+
+    Returns:
+    float: Mean of absolute differences in the specified central area.
+    np.array: Outlier mask (not implemented in detail here).
+    """
     scale, translation = params
     scaled_and_translated_predicted = predicted_depth * scale + translation
-    
-    # Create a mask where GT depth values are not zero
-    mask = depth_gt != 0
-    
+
+    # Validate center_fraction
+    if not (0 < center_fraction <= 1):
+        raise ValueError("center_fraction must be between 0 and 1.")
+
+    # Calculate the center region dimensions based on center_fraction
+    h, w = depth_gt.shape
+    reduce_h = int(h * (1 - center_fraction) / 2)
+    reduce_w = int(w * (1 - center_fraction) / 2)
+
+    # Create a mask where GT depth values are not zero and within the specified center fraction
+    mask = np.zeros_like(depth_gt, dtype=bool)
+    mask[reduce_h:h-reduce_h, reduce_w:w-reduce_w] = True
+    mask = mask & (depth_gt != 0)
+
     # Apply the mask to both GT and predicted depth data
     valid_gt_depth = depth_gt[mask]
     valid_predicted_depth = scaled_and_translated_predicted[mask]
-    
+
     # Calculate the mean of absolute differences where GT depth is not zero
     loss_map = np.abs(valid_gt_depth - valid_predicted_depth)
-    
-    outlier_mask = 0
-    
+
+    # Create an outlier mask (optional, depending on additional requirements)
+    outlier_mask = np.zeros_like(depth_gt, dtype=bool)  # Implementation needed if outliers are to be detected
+
     # Return the mean of absolute differences and the outlier mask
     return np.mean(loss_map), outlier_mask
 
-def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_threshold = 95):
+def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_threshold = 75):
     # Apply scale and translation to predicted depth
     
     # Create a mask where GT depth values are not zero

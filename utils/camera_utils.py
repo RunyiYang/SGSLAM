@@ -2,6 +2,7 @@ import torch
 from torch import nn
 import time 
 import cv2
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
@@ -72,45 +73,115 @@ class Camera(nn.Module):
     def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, DEVICE, transform, config, render_pkg_input):
         gt_color, gt_depth, gt_pose, raw_image = dataset[idx]
         #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
-        def depth_anything_depth(image, depth_gt, cur_frame_idx, config, render_pkg_input):
-            depth_gt = depth_gt
+        def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input):
+            depth_render = depth_gt1
+            if render_pkg_input != 0:
+                depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
+            print('render depth', np.median(depth_render))
+            
+            depth_gt = depth_render
             predicted_depth = np.zeros_like(depth_gt)
             non_zero_mask = depth_gt != 0
             predicted_depth[non_zero_mask] = 1 / depth_gt[non_zero_mask]
             depth_gt_disparity = predicted_depth
             print('depth_gt_median', np.median(depth_gt))
-            #depth_render = depth_gt
-            #if render_pkg_input != 0:
-            #    depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
-            #print('render depth', np.median(depth_render))
             time1 = time.time()
             with torch.no_grad():
                 depth = depth_anything.infer_image(image, 518)
             time2 = time.time()
-            #print('depth_anything time', time2 - time1)
+            print('depth_anything time', time2 - time1)
             sigma_color=150
             sigma_space=150
             output = depth.squeeze()
             depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
-            bounds = [(0,100000), (-5000, 10000)]
+            bounds = [(0,1), (0, 1)]
 
             # Use Differential Evolution to optimize the scale and translation
             result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt_disparity)[0], bounds)
 
             # Check the results
             optimal_scale, optimal_translation = result.x
+            print('optimal_scale', optimal_scale)
+            print('optimal_translation', optimal_translation)
             depth = 1 / (depthmap * optimal_scale + optimal_translation)
             print('median predicted depth', np.median(depth))
             optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
             print('optimal_l1_loss_before_outlier', optimal_l1_loss)
-            depthmap = depthmap * (1 - outlier_mask)
-            depth_gt_disparity = depth_gt_disparity * (1 - outlier_mask)
-            result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt_disparity)[0], bounds)
+            '''
+            # Define the directories
+            scale_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/scale_render_desk_disparity'
+            translation_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/translation_render_desk_disparity'
+            loss_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/loss_render_desk_disparity'
+
+            # Create the directories if they do not exist
+            os.makedirs(scale_dir, exist_ok=True)
+            os.makedirs(translation_dir, exist_ok=True)
+            os.makedirs(loss_dir, exist_ok=True)
+                        
+            # Save the data to .npy files
+            np.save(f'{scale_dir}/combined_{idx}', optimal_scale)
+            np.save(f'{translation_dir}/combined_{idx}', optimal_translation)
+            np.save(f'{loss_dir}/combined_{idx}', optimal_l1_loss)
+            '''
+            depthmap_new = depthmap * (1 - outlier_mask)
+            depth_gt_disparity_new = depth_gt_disparity * (1 - outlier_mask)
+            result = differential_evolution(lambda params: l1_loss(params, depthmap_new, depth_gt_disparity_new)[0], bounds)
             optimal_scale, optimal_translation = result.x
             depth = 1 / (depthmap * optimal_scale + optimal_translation)
-            print('median predicted depth', np.median(depth))            
-            optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+            #print('median predicted depth', np.median(depth))          
+            depth_gt = depth_gt * (1 - outlier_mask)  
+            optimal_l1_loss, outlier_mask_new = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
             print('optimal_l1_loss', optimal_l1_loss)
+            #depth = depth * (1 - outlier_mask)
+
+            return depth
+        
+        def depth_anything_depth_absolute(image, depth_gt1, cur_frame_idx, config, render_pkg_input):
+            depth_render = depth_gt1
+            if render_pkg_input != 0:
+                depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
+            print('render depth', np.median(depth_render))
+            
+            depth_gt = depth_render
+            print('depth_gt_median', np.median(depth_gt))
+            time1 = time.time()
+            with torch.no_grad():
+                depth = depth_anything.infer_image(image, 518)
+            time2 = time.time()
+            print('depth_anything time', time2 - time1)
+            depth = (depth - depth.min()) / (depth.max() - depth.min())
+            sigma_color=150
+            sigma_space=150
+            output = depth.squeeze()
+            depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
+            bounds = [(0,10), (0, 10)]
+            predicted_depth = 1 - depthmap
+            # Use Differential Evolution to optimize the scale and translation
+            result = differential_evolution(lambda params: l1_loss(params, predicted_depth, depth_gt)[0], bounds)
+
+            # Check the results
+            optimal_scale, optimal_translation = result.x
+            print('optimal_scale', optimal_scale)
+            print('optimal_translation', optimal_translation)
+            depth = (predicted_depth * optimal_scale + optimal_translation)
+            print('median predicted depth', np.median(depth))
+            optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+            print('optimal_l1_loss_before_outlier', optimal_l1_loss)
+
+            # Define the directories
+            scale_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/scale_render_desk_absolute'
+            translation_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/translation_render_desk_absolute'
+            loss_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/loss_render_desk_absolute'
+
+            # Create the directories if they do not exist
+            os.makedirs(scale_dir, exist_ok=True)
+            os.makedirs(translation_dir, exist_ok=True)
+            os.makedirs(loss_dir, exist_ok=True)
+                        
+            # Save the data to .npy files
+            np.save(f'{scale_dir}/combined_{idx}', optimal_scale)
+            np.save(f'{translation_dir}/combined_{idx}', optimal_translation)
+            np.save(f'{loss_dir}/combined_{idx}', optimal_l1_loss)
             depth = depth * (1 - outlier_mask)
             return depth
         
