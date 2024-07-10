@@ -210,3 +210,80 @@ def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_
     #print(f"Percentage of masked outliers: {percent_masked_outliers:.2f}%")
     valid_loss_map = loss_map[~outliers_in_non_zero]  # Exclude outliers for mean calculation
     return np.mean(loss_map), outlier_mask
+
+def l2_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_threshold=90):
+    # Apply scale and translation to predicted depth
+    scaled_and_translated_predicted = predicted_depth * scale + translation
+    
+    # Create a mask where GT depth values are not zero
+    mask_non_zero = depth_gt != 0
+    
+    # Apply the mask to both GT and predicted depth data
+    valid_gt_depth = depth_gt[mask_non_zero]
+    valid_predicted_depth = scaled_and_translated_predicted[mask_non_zero]
+    
+    # Calculate the L2 loss where GT depth is not zero
+    loss_map = (valid_gt_depth - valid_predicted_depth) ** 2
+    
+    # Calculate the threshold for outliers based on the specified percentile of the loss map
+    threshold = np.percentile(loss_map, percentile_threshold)
+    
+    # Identify outliers within the non-zero mask
+    outliers_in_non_zero = loss_map > threshold
+    
+    # Create the full outlier mask, initializing with False for every element
+    outlier_mask = np.zeros_like(depth_gt, dtype=bool)
+    outlier_mask[mask_non_zero] = outliers_in_non_zero
+    
+    # Calculate the number and percentage of values masked out as outliers
+    num_masked_outliers = np.sum(outliers_in_non_zero)
+    total_values = np.sum(mask_non_zero)
+    percent_masked_outliers = (num_masked_outliers / total_values) * 100 if total_values != 0 else 0
+    
+    # Calculate the mean loss excluding outliers
+    valid_loss_map = loss_map[~outliers_in_non_zero]
+    
+    # Return the mean of squared differences and the outlier mask
+    return np.mean(loss_map), outlier_mask
+
+def l2_loss(params, predicted_depth, depth_gt):
+    scale, translation = params
+    scaled_and_translated_predicted = predicted_depth * scale + translation
+    
+    # Create a mask where GT depth values are not zero
+    mask = depth_gt != 0
+    
+    # Apply the mask to both GT and predicted depth data
+    valid_gt_depth = depth_gt[mask]
+    valid_predicted_depth = scaled_and_translated_predicted[mask]
+    
+    # Calculate the mean of squared differences where GT depth is not zero
+    loss_map = (valid_gt_depth - valid_predicted_depth) ** 2
+    
+    # Return the mean of squared differences and an optional outlier mask
+    return np.mean(loss_map), 0  # Outlier mask not used in this simple version
+
+
+def lstsquare(X, y):
+    # Create a mask to filter out positions where y is zero
+    mask = y != 0
+    
+    # Apply the mask to both X and y
+    X_masked = X[mask]
+    y_masked = y[mask]
+    
+    # Flatten the masked arrays
+    X_flat = X_masked.flatten()
+    y_flat = y_masked.flatten()
+    
+    # Add a column of ones to X_flat for the intercept term
+    X_flat_b = np.vstack([X_flat, np.ones(X_flat.shape)]).T
+    
+    # Solve the least squares problem
+    params, residuals, rank, s = np.linalg.lstsq(X_flat_b, y_flat, rcond=None)
+    
+    # Extract optimal parameters
+    optimal_A = params[0]
+    optimal_b = params[1]
+    
+    return optimal_A, optimal_b

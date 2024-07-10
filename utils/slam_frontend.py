@@ -104,7 +104,7 @@ class FrontEnd(mp.Process):
                 #)
                 #initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
                 initial_depth = initial_depth.cpu().numpy()[0]
-                print('number of zeros of initial_depth', np.sum(initial_depth == 0))
+                #print('number of zeros of initial_depth', np.sum(initial_depth == 0))
             return initial_depth
         
         '''

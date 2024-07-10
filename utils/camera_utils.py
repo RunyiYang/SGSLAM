@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 import time 
+import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +9,7 @@ import torch.nn.functional as F
 from scipy.optimize import differential_evolution
 
 from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2, getWorld2View2
-from utils.slam_utils import image_gradient, image_gradient_mask, l1_loss, l1_loss_calculate
+from utils.slam_utils import image_gradient, image_gradient_mask, l1_loss, l1_loss_calculate, l2_loss, l2_loss_calculate, lstsquare
 
 
 class Camera(nn.Module):
@@ -72,46 +73,99 @@ class Camera(nn.Module):
     def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, DEVICE, transform, config, render_pkg_input):
         gt_color, gt_depth, gt_pose, raw_image = dataset[idx]
         #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
-        def depth_anything_depth(image, depth_gt, cur_frame_idx, config, render_pkg_input):
-            depth_gt = depth_gt
+        def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input):
+            heristic_scale = 0.09430590225468062
+            heristic_translation = 0.5053325714919804
+            depth_render = depth_gt1
+            if render_pkg_input != 0:
+                depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
+            print('render depth', np.median(depth_render))
+            
+            depth_gt = depth_render
             predicted_depth = np.zeros_like(depth_gt)
             non_zero_mask = depth_gt != 0
             predicted_depth[non_zero_mask] = 1 / depth_gt[non_zero_mask]
             depth_gt_disparity = predicted_depth
-            print('depth_gt_median', np.median(depth_gt))
-            #depth_render = depth_gt
-            #if render_pkg_input != 0:
-            #    depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
-            #print('render depth', np.median(depth_render))
+            #print('depth_gt_median', np.median(depth_gt))
             time1 = time.time()
             with torch.no_grad():
                 depth = depth_anything.infer_image(image, 518)
-            time2 = time.time()
-            #print('depth_anything time', time2 - time1)
+
             sigma_color=150
             sigma_space=150
             output = depth.squeeze()
             depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
-            bounds = [(0,100000), (-5000, 10000)]
+            
+            optimal_scale, optimal_translation = lstsquare(depthmap,depth_gt_disparity)
 
-            # Use Differential Evolution to optimize the scale and translation
-            result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt_disparity)[0], bounds)
-
-            # Check the results
-            optimal_scale, optimal_translation = result.x
+            #print('optimal_scale', optimal_scale)
+            #print('optimal_translation', optimal_translation)
             depth = 1 / (depthmap * optimal_scale + optimal_translation)
-            print('median predicted depth', np.median(depth))
-            optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+            #print('median predicted depth', np.median(depth))
+            optimal_l1_loss, outlier_mask = l2_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
             print('optimal_l1_loss_before_outlier', optimal_l1_loss)
-            depthmap = depthmap * (1 - outlier_mask)
-            depth_gt_disparity = depth_gt_disparity * (1 - outlier_mask)
-            result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt_disparity)[0], bounds)
-            optimal_scale, optimal_translation = result.x
+            
+            depthmap_new = depthmap * (1 - outlier_mask)
+            depth_gt_disparity_new = depth_gt_disparity * (1 - outlier_mask)
+
+
+            optimal_scale, optimal_translation = lstsquare(depthmap_new, depth_gt_disparity_new)
             depth = 1 / (depthmap * optimal_scale + optimal_translation)
-            print('median predicted depth', np.median(depth))            
-            optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+            #print('median predicted depth', np.median(depth))          
+            depth_gt = depth_gt * (1 - outlier_mask)  
+            optimal_l1_loss, outlier_mask_new = l2_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
             print('optimal_l1_loss', optimal_l1_loss)
-            depth = depth * (1 - outlier_mask)
+            if optimal_l1_loss > 1.0:
+                optimal_scale = heristic_scale
+                optimal_translation = heristic_translation
+                depth = 1 / (depthmap * optimal_scale + optimal_translation)
+                optimal_l1_loss, outlier_mask_new = l2_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+            #depth = depth * (1 - outlier_mask)
+            time2 = time.time()
+            print('depth_anything time', time2 - time1)
+            # Define the directories
+            scale_dir = '/home/wenxuan/MonoGS/tum_debug_images/scale_render_desk_disparity'
+            translation_dir = '/home/wenxuan/MonoGS/tum_debug_images/translation_render_desk_disparity'
+            loss_dir = '/home/wenxuan/MonoGS/tum_debug_images/loss_render_desk_disparity'
+
+            # Create the directories if they do not exist
+            os.makedirs(scale_dir, exist_ok=True)
+            os.makedirs(translation_dir, exist_ok=True)
+            os.makedirs(loss_dir, exist_ok=True)
+                        
+            # Save the data to .npy files
+            np.save(f'{scale_dir}/combined_{idx}', optimal_scale)
+            np.save(f'{translation_dir}/combined_{idx}', optimal_translation)
+            np.save(f'{loss_dir}/combined_{idx}', optimal_l1_loss)
+            '''
+            fig, ax = plt.subplots(1, 4, figsize=(24, 6))
+            im_gt = ax[0].imshow(depth_gt1, cmap='gray')
+            ax[0].set_title('Ground Truth Depth')
+            ax[0].axis('off')
+            fig.colorbar(im_gt, ax=ax[0], fraction=0.046, pad=0.04)
+
+            im_pred = ax[1].imshow(depth, cmap='gray')
+            ax[1].set_title('Predicted Depth')
+            ax[1].axis('off')
+            fig.colorbar(im_pred, ax=ax[1], fraction=0.046, pad=0.04)
+            
+            render_pred = ax[2].imshow(depth_render, cmap='gray')
+            ax[2].set_title('rendered Depth')
+            ax[2].axis('off')
+            fig.colorbar(render_pred, ax=ax[2], fraction=0.046, pad=0.04)
+
+            im_loss = ax[3].imshow(np.abs((depth_gt) - (depth)), cmap='hot')
+            ax[3].set_title(f'L1 Loss: {optimal_l1_loss:.2f}')
+            ax[3].axis('off')
+            fig.colorbar(im_loss, ax=ax[3], fraction=0.046, pad=0.04)
+
+            # Save the figure
+            plt.tight_layout()
+            plt.savefig(f'/home/wenxuan/MonoGS/tum_debug_images/desk_depth_info_v2_diparity_scale_render/combined_{cur_frame_idx}.png')
+            plt.close()
+            
+            #cv2.imwrite(f'/home/wenxuan/MonoGS/tum_debug_images/gt_depth/combined_{cur_frame_idx}.png', depth_gt.astype("uint16"))
+            '''
             return depth
         
         depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input)
