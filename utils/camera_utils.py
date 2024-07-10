@@ -167,7 +167,7 @@ class Camera(nn.Module):
             print('median predicted depth', np.median(depth))
             optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
             print('optimal_l1_loss_before_outlier', optimal_l1_loss)
-
+            '''
             # Define the directories
             scale_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/scale_render_desk_absolute'
             translation_dir = '/scratch_net/biwidl307/wenxuan/MonoGS/tum_debug_images/translation_render_desk_absolute'
@@ -183,9 +183,19 @@ class Camera(nn.Module):
             np.save(f'{translation_dir}/combined_{idx}', optimal_translation)
             np.save(f'{loss_dir}/combined_{idx}', optimal_l1_loss)
             depth = depth * (1 - outlier_mask)
+            '''
+            predicted_depth_new = predicted_depth * (1 - outlier_mask)
+            depth_gt_new = depth_gt * (1 - outlier_mask)
+            result = differential_evolution(lambda params: l1_loss(params, predicted_depth_new, depth_gt_new)[0], bounds)
+            optimal_scale, optimal_translation = result.x
+            depth = (predicted_depth * optimal_scale + optimal_translation)
+            #print('median predicted depth', np.median(depth))          
+            optimal_l1_loss, outlier_mask_new = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt_new)
+            print('optimal_l1_loss', optimal_l1_loss)
+            #depth = depth * (1 - outlier_mask)
             return depth
         
-        depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input)
+        depth_anything_depth_output = depth_anything_depth_absolute(raw_image, gt_depth, idx, config, render_pkg_input)
         return Camera(
             idx,
             gt_color,

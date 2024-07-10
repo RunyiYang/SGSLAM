@@ -198,7 +198,7 @@ def l1_loss(params, predicted_depth, depth_gt, center_fraction=1):
     # Return the mean of absolute differences and the outlier mask
     return np.mean(loss_map), outlier_mask
 
-def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_threshold = 75):
+def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_threshold = 90):
     # Apply scale and translation to predicted depth
     
     # Create a mask where GT depth values are not zero
