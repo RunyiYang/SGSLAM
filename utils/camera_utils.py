@@ -81,7 +81,7 @@ class Camera(nn.Module):
                 depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
             print('render depth', np.median(depth_render))
             
-            depth_gt = depth_render
+            depth_gt = depth_gt1
             predicted_depth = np.zeros_like(depth_gt)
             non_zero_mask = depth_gt != 0
             predicted_depth[non_zero_mask] = 1 / depth_gt[non_zero_mask]
@@ -116,6 +116,7 @@ class Camera(nn.Module):
             optimal_l1_loss, outlier_mask_new = l2_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
             print('optimal_l1_loss', optimal_l1_loss)
             if optimal_l1_loss > 1.0:
+                print("outlier result")
                 optimal_scale = heristic_scale
                 optimal_translation = heristic_translation
                 depth = 1 / (depthmap * optimal_scale + optimal_translation)
@@ -166,6 +167,57 @@ class Camera(nn.Module):
             
             #cv2.imwrite(f'/home/wenxuan/MonoGS/tum_debug_images/gt_depth/combined_{cur_frame_idx}.png', depth_gt.astype("uint16"))
             '''
+            return depth
+        def depth_anything_depth_absolute(image, depth_gt1, cur_frame_idx, config, render_pkg_input):
+            depth_render = depth_gt1
+            if render_pkg_input != 0:
+                depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
+            #print('render depth', np.median(depth_render))
+            
+            depth_gt = depth_render
+            #print('depth_gt_median', np.median(depth_gt))
+            time1 = time.time()
+            with torch.no_grad():
+                depth = depth_anything.infer_image(image, 518)
+            time2 = time.time()
+            #print('depth_anything time', time2 - time1)
+            depth = (depth - depth.min()) / (depth.max() - depth.min())
+            sigma_color=150
+            sigma_space=150
+            output = depth.squeeze()
+            depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
+            predicted_depth = 1 - depthmap
+            # Use Differential Evolution to optimize the scale and translation
+            optimal_scale, optimal_translation = (predicted_depth, depth_gt)
+            #print('optimal_scale', optimal_scale)
+            #print('optimal_translation', optimal_translation)
+            depth = (predicted_depth * optimal_scale + optimal_translation)
+            #print('median predicted depth', np.median(depth))
+            optimal_l2_loss, outlier_mask = l2_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+            print('optimal_l2_loss_before_outlier', optimal_l2_loss)
+            
+            predicted_depth_new = predicted_depth * (1 - outlier_mask)
+            depth_gt_new = depth_gt * (1 - outlier_mask)
+            optimal_scale, optimal_translation = lstsquare(predicted_depth_new, depth_gt_new)
+            depth = (predicted_depth * optimal_scale + optimal_translation)
+            #print('median predicted depth', np.median(depth))          
+            optimal_l2_loss, outlier_mask_new = l2_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt_new)
+            print('optimal_l2_loss', optimal_l2_loss)
+            #depth = depth * (1 - outlier_mask)
+            # Define the directories
+            scale_dir = '/home/wenxuan/MonoGS/tum_debug_images/scale_render_desk_absolute'
+            translation_dir = '/home/wenxuan/MonoGS/tum_debug_images/translation_render_desk_absolute'
+            loss_dir = '/home/wenxuan/MonoGS/tum_debug_images/loss_render_desk_absolute'
+
+            # Create the directories if they do not exist
+            os.makedirs(scale_dir, exist_ok=True)
+            os.makedirs(translation_dir, exist_ok=True)
+            os.makedirs(loss_dir, exist_ok=True)
+                        
+            # Save the data to .npy files
+            np.save(f'{scale_dir}/combined_{idx}', optimal_scale)
+            np.save(f'{translation_dir}/combined_{idx}', optimal_translation)
+            np.save(f'{loss_dir}/combined_{idx}', optimal_l2_loss)
             return depth
         
         depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input)

@@ -287,3 +287,31 @@ def lstsquare(X, y):
     optimal_b = params[1]
     
     return optimal_A, optimal_b
+
+def lstsquare_multidimensional(X, y):
+    # Create a mask to filter out positions where y is zero (assuming zero-vector is invalid)
+    mask = np.any(y != 0, axis=1)
+    
+    # Apply the mask to both X and y
+    X_masked = X[mask]
+    y_masked = y[mask]
+
+    
+    # Design matrix X with an extra column for the translation (intercept) term for each dimension
+    n_samples, n_dims = X_masked.shape
+    X_design = np.hstack([X_masked, np.ones((n_samples, 1))])
+    
+    # Initialize parameters
+    A = np.zeros((n_dims, n_dims))
+    b = np.zeros(n_dims)
+    
+    # Solve for each dimension of y
+    for i in range(n_dims):
+        # Solve the least squares problem for the current dimension
+        params = np.linalg.lstsq(X_design, y_masked[:, i], rcond=None)[0]
+        
+        # Extract scale factors and translation for the current dimension
+        A[:, i] = params[:-1]
+        b[i] = params[-1]
+    
+    return A, b
