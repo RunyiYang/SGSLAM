@@ -94,7 +94,7 @@ class Camera(nn.Module):
             sigma_space=150
             output = depth.squeeze()
             depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
-            bounds = [(0,1), (0, 1)]
+            bounds = [(0,10), (0, 10)]
 
             # Use Differential Evolution to optimize the scale and translation
             result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt_disparity)[0], bounds)
@@ -195,7 +195,7 @@ class Camera(nn.Module):
             #depth = depth * (1 - outlier_mask)
             return depth
         
-        depth_anything_depth_output = depth_anything_depth_absolute(raw_image, gt_depth, idx, config, render_pkg_input)
+        depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input)
         return Camera(
             idx,
             gt_color,

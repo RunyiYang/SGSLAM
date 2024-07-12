@@ -154,7 +154,7 @@ def get_median_depth_da(depth, opacity=None, mask=None, return_std=False):
         return valid_depth.median(), valid_depth.std(), valid
     return valid_depth.median()
 
-def l1_loss(params, predicted_depth, depth_gt, center_fraction=1):
+def l1_loss(params, predicted_depth, depth_gt, center_fraction=0.8):
     """
     Calculate the L1 loss using a central portion of the depth ground truth.
     
@@ -198,7 +198,7 @@ def l1_loss(params, predicted_depth, depth_gt, center_fraction=1):
     # Return the mean of absolute differences and the outlier mask
     return np.mean(loss_map), outlier_mask
 
-def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_threshold = 90):
+def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_threshold = 80):
     # Apply scale and translation to predicted depth
     
     # Create a mask where GT depth values are not zero

@@ -96,6 +96,7 @@ class FrontEnd(mp.Process):
                 invalid_depth_mask = torch.logical_or(
                     invalid_depth_mask, ~valid_mask
                 )
+                
                 #print('number of zeros of invalid_depth_mask', np.sum(invalid_depth_mask == 0))
                 #depth[invalid_depth_mask] = median_depth
                 initial_depth = depth
