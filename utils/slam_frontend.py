@@ -28,6 +28,8 @@ class FrontEnd(mp.Process):
         self.depth_anything = depth_anything
         self.transform = transform
         self.background = None
+        self.c_dispairty = []
+        self.c_absolute = []
         self.pipeline_params = None
         self.frontend_queue = None
         self.backend_queue = None
@@ -65,6 +67,7 @@ class FrontEnd(mp.Process):
         self.single_thread = self.config["Training"]["single_thread"]        
     
     def add_new_keyframe(self, cur_frame_idx, depth=None, opacity=None, init=False):
+        #print('keyframe number', cur_frame_idx)
         rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
         self.kf_indices.append(cur_frame_idx)
         viewpoint = self.cameras[cur_frame_idx]
@@ -78,7 +81,7 @@ class FrontEnd(mp.Process):
             #print('number of zeros of initial_depth', np.sum(initial_depth == 0))
             return initial_depth[0].numpy()
         '''
-        
+        '''
         if self.monocular:
             # use the observed depth
             initial_depth_da = viewpoint.depth
@@ -104,17 +107,18 @@ class FrontEnd(mp.Process):
                 #)
                 #initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
                 initial_depth = initial_depth.cpu().numpy()[0]
-                print('number of zeros of initial_depth', np.sum(initial_depth == 0))
+                #print('number of zeros of initial_depth', np.sum(initial_depth == 0))
             return initial_depth
-        
         '''
+        
         #print('monocular', self.monocular)
         if self.monocular:
             if depth is None:
                 initial_depth = 2 * torch.ones(1, gt_img.shape[1], gt_img.shape[2])
                 initial_depth += torch.randn_like(initial_depth) * 0.3
             else:
-                depth = depth.detach().clone()
+                initial_depth_da = viewpoint.depth
+                depth = torch.from_numpy(initial_depth_da).unsqueeze(0).cuda()
                 opacity = opacity.detach()
                 use_inv_depth = False
                 if use_inv_depth:
@@ -151,7 +155,7 @@ class FrontEnd(mp.Process):
             
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
-        '''
+        
         
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
@@ -423,7 +427,7 @@ class FrontEnd(mp.Process):
                     continue
                 rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
                 viewpoint = Camera.init_from_dataset(
-                    self.dataset, cur_frame_idx, projection_matrix, rgb_boundary_threshold, self.depth_anything, self.DEVICE, self.transform, self.config, self.render_pkg_input
+                    self.dataset, cur_frame_idx, projection_matrix, rgb_boundary_threshold, self.depth_anything, self.c_dispairty, self.c_absolute, self.config, self.render_pkg_input
                 )
                 viewpoint.compute_grad_mask(self.config)
 
