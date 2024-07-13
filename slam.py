@@ -27,6 +27,7 @@ class SLAM:
         start = torch.cuda.Event(enable_timing=True)
         end = torch.cuda.Event(enable_timing=True)
 
+        start.record()
 
         self.config = config
         self.save_dir = save_dir
@@ -105,7 +106,6 @@ class SLAM:
             gui_process.start()
             time.sleep(5)
 
-        start.record()
         backend_process.start()
         self.frontend.run()
         backend_queue.put(["pause"])
