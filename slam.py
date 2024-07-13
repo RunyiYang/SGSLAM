@@ -10,8 +10,6 @@ import yaml
 from munch import munchify
 
 import wandb
-from depth_anything.dpt import DepthAnything
-from depth_anything.util.transform import Resize, NormalizeImage, PrepareForNet
 from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.system_utils import mkdir_p
 from gui import gui_utils, slam_gui
@@ -22,15 +20,13 @@ from utils.logging_utils import Log
 from utils.multiprocessing_utils import FakeQueue
 from utils.slam_backend import BackEnd
 from utils.slam_frontend import FrontEnd
-import cv2
-from torchvision.transforms import Compose
+
 
 class SLAM:
     def __init__(self, config, save_dir=None):
         start = torch.cuda.Event(enable_timing=True)
         end = torch.cuda.Event(enable_timing=True)
 
-        start.record()
 
         self.config = config
         self.save_dir = save_dir
@@ -71,28 +67,8 @@ class SLAM:
 
         self.config["Results"]["save_dir"] = save_dir
         self.config["Training"]["monocular"] = self.monocular
-        encoder = 'vitb' # can also be 'vitb' or 'vitl'
-        DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.depth_anything = DepthAnything.from_pretrained('LiheYoung/depth_anything_{}14'.format(encoder)).to(DEVICE).eval()
-    
-        total_params = sum(param.numel() for param in self.depth_anything.parameters())
-        print('Total parameters: {:.2f}M'.format(total_params / 1e6))
-    
-        self.transform = Compose([
-            Resize(
-                width=518,
-                height=518,
-                resize_target=False,
-                keep_aspect_ratio=True,
-                ensure_multiple_of=14,
-                resize_method='lower_bound',
-                image_interpolation_method=cv2.INTER_CUBIC,
-            ),
-            NormalizeImage(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            PrepareForNet(),
-        ])
 
-        self.frontend = FrontEnd(self.config, self.depth_anything, self.transform)
+        self.frontend = FrontEnd(self.config)
         self.backend = BackEnd(self.config)
 
         self.frontend.dataset = self.dataset
@@ -129,6 +105,7 @@ class SLAM:
             gui_process.start()
             time.sleep(5)
 
+        start.record()
         backend_process.start()
         self.frontend.run()
         backend_queue.put(["pause"])

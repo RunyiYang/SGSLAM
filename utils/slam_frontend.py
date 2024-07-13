@@ -5,30 +5,19 @@ import torch
 import torch.multiprocessing as mp
 
 from gaussian_splatting.gaussian_renderer import render
-from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2, getWorld2View2
+from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2
 from gui import gui_utils
-from utils.camera_utils import Camera
+from utils.camera_utils import Camera, CameraMsg
 from utils.eval_utils import eval_ate, save_gaussians
 from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
 from utils.slam_utils import get_loss_tracking, get_median_depth
-#from depth_anything.dpt import DepthAnything
-#from depth_anything.util.transform import Resize, NormalizeImage, PrepareForNet
-from PIL import Image
-import cv2
-import torch.nn.functional as F
-from scipy.optimize import minimize_scalar
-from scipy.optimize import minimize
-from scipy.optimize import differential_evolution
-
 
 class FrontEnd(mp.Process):
-    def __init__(self, config, depth_anything, transform):
+    def __init__(self, config):
         super().__init__()
         self.config = config
-        self.depth_anything = depth_anything
-        self.transform = transform
         self.background = None
         self.pipeline_params = None
         self.frontend_queue = None
@@ -42,7 +31,6 @@ class FrontEnd(mp.Process):
         self.iteration_count = 0
         self.occ_aware_visibility = {}
         self.current_window = []
-        self.DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.reset = True
         self.requested_init = False
@@ -53,6 +41,7 @@ class FrontEnd(mp.Process):
         self.cameras = dict()
         self.device = "cuda:0"
         self.pause = False
+        
 
     def set_hyperparams(self):
         self.save_dir = self.config["Results"]["save_dir"]
@@ -63,90 +52,21 @@ class FrontEnd(mp.Process):
         self.tracking_itr_num = self.config["Training"]["tracking_itr_num"]
         self.kf_interval = self.config["Training"]["kf_interval"]
         self.window_size = self.config["Training"]["window_size"]
-        self.single_thread = self.config["Training"]["single_thread"]
-
-    def depth_anything_depth(self, image, depth_gt, cur_frame_idx):
-        depth_gt = depth_gt * 5000.0
-        #print('image shape', image.shape)
-        h, w = image.shape[:2]
-        image = self.transform({'image': image})['image']
-        #print('image', image.shape)
-        image = torch.from_numpy(image).unsqueeze(0).to(self.DEVICE)
-        #print('image1', image.shape)
-        with torch.no_grad():
-            depth = self.depth_anything(image)
-        #print('depth', depth.shape)
-        prediction = F.interpolate(depth[None], (h, w), mode='bilinear', align_corners=False)[0, 0]
-        #print('prediction shape', prediction.shape)
+        self.single_thread = (
+            self.config["Dataset"]["single_thread"]
+            if "single_thread" in self.config["Dataset"]
+            else False
+        )
         
-        sigma_color=150
-        sigma_space=150
-        output = prediction.squeeze().cpu().numpy()
-        depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
-        #optimal_scale, optimal_translation = 13238.90159861579, 3951.3636687612507
-        predicted_depth = np.zeros_like(depthmap)
-        non_zero_mask = depthmap != 0
-        predicted_depth[non_zero_mask] = 1 / depthmap[non_zero_mask]
-        png_depth_scale = 5000.0
-        def l1_loss(params):
-            scale, translation = params
-            scaled_and_translated_predicted = predicted_depth * scale + translation
-            
-            # Create a mask where GT depth values are not zero
-            mask = depth_gt != 0
-            
-            # Apply the mask to both GT and predicted depth data
-            valid_gt_depth = depth_gt[mask] / png_depth_scale
-            valid_predicted_depth = scaled_and_translated_predicted[mask] / png_depth_scale
-
-            # Return the mean of absolute differences where GT depth is not zero
-            return np.mean(np.abs(valid_gt_depth - valid_predicted_depth))
+        self.use_gui = self.config["Results"]["use_gui"]
+        self.constant_velocity_warmup = 200 # TODO: fix hardcoding
         
-        # Set bounds for scale and translation
-        #bounds = [(0,50000), (-5000, 5000)]
-        bounds = [(0,100000), (-5000, 10000)]
-
-        # Use Differential Evolution to optimize the scale and translation
-        result = differential_evolution(l1_loss, bounds)
-        
-        
-        # Check the results
-        optimal_scale, optimal_translation = result.x
-        print("Optimal scale:", optimal_scale)
-        print("Optimal translation:", optimal_translation)
-        depth = (predicted_depth * optimal_scale + optimal_translation).astype("uint16") / 5000.0
-        # Compute the L1 loss at the optimal scale and translation
-        optimal_l1_loss = l1_loss(result.x)
-        print("L1 loss at optimal scale and translation:", optimal_l1_loss)
-        #cv2.imwrite('./pred_depth/' + str(cur_frame_idx) + '.png', depth)
-        return depth
-        
-        
-        
-    
     def add_new_keyframe(self, cur_frame_idx, depth=None, opacity=None, init=False):
         rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
         self.kf_indices.append(cur_frame_idx)
         viewpoint = self.cameras[cur_frame_idx]
         gt_img = viewpoint.original_image.cuda()
-        input_depth_anything = gt_img.permute(1, 2, 0).cpu().numpy()
-        
         valid_rgb = (gt_img.sum(dim=0) > rgb_boundary_threshold)[None]
-        #print('valid_rgb shape', valid_rgb.shape)
-        
-        if self.monocular:
-            # use the observed depth
-            initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
-            #print('initial_depth shape', initial_depth.shape)
-            initial_depth[~valid_rgb.cpu()] = 0  # Ignore the invalid rgb pixels
-            #print('output_shape', initial_depth[0].numpy().shape)
-            #print(initial_depth[0].numpy())
-            print(np.max(initial_depth[0].numpy()))
-            gt_depth = initial_depth[0].numpy()
-            depth = self.depth_anything_depth(input_depth_anything, gt_depth, cur_frame_idx)
-            print('depth', np.max(depth))
-            return depth
-        '''
         if self.monocular:
             if depth is None:
                 initial_depth = 2 * torch.ones(1, gt_img.shape[1], gt_img.shape[2])
@@ -189,18 +109,10 @@ class FrontEnd(mp.Process):
 
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
-        '''
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
-        #print('initial_depth shape', initial_depth.shape)
         initial_depth[~valid_rgb.cpu()] = 0  # Ignore the invalid rgb pixels
-        #print('output_shape', initial_depth[0].numpy().shape)
-        #print(initial_depth[0].numpy())
-        print(np.max(initial_depth[0].numpy()))
-        gt_depth = initial_depth[0].numpy()
-        depth = self.depth_anything_depth(input_depth_anything, gt_depth, cur_frame_idx)
-        print('depth', np.max(depth))
-        return depth
+        return initial_depth[0].numpy()
 
     def initialize(self, cur_frame_idx, viewpoint):
         self.initialized = not self.monocular
@@ -213,7 +125,7 @@ class FrontEnd(mp.Process):
             self.backend_queue.get()
 
         # Initialise the frame at the ground truth pose
-        viewpoint.update_RT(viewpoint.R_gt, viewpoint.T_gt)
+        viewpoint.T = viewpoint.T_gt
 
         self.kf_indices = []
         depth_map = self.add_new_keyframe(cur_frame_idx, init=True)
@@ -221,9 +133,20 @@ class FrontEnd(mp.Process):
         self.reset = False
 
     def tracking(self, cur_frame_idx, viewpoint):
-        prev = self.cameras[cur_frame_idx - self.use_every_n_frames]
-        viewpoint.update_RT(prev.R, prev.T)
-
+        
+        if self.initialized and cur_frame_idx > self.constant_velocity_warmup and self.monocular:
+            prev_prev = self.cameras[cur_frame_idx - self.use_every_n_frames -1 ]
+            prev = self.cameras[cur_frame_idx - self.use_every_n_frames]
+            
+            pose_prev_prev = prev_prev.T
+            pose_prev = prev.T
+            velocity = pose_prev @ torch.linalg.inv(pose_prev_prev)
+            pose_new = velocity @ pose_prev
+            viewpoint.T = pose_new
+        else:
+            prev = self.cameras[cur_frame_idx - self.use_every_n_frames]
+            viewpoint.T = prev.T
+            
         opt_params = []
         opt_params.append(
             {
@@ -274,10 +197,10 @@ class FrontEnd(mp.Process):
                 pose_optimizer.step()
                 converged = update_pose(viewpoint)
 
-            if tracking_itr % 10 == 0:
+            if tracking_itr % 50 == 0:
                 self.q_main2vis.put(
                     gui_utils.GaussianPacket(
-                        current_frame=viewpoint,
+                        current_frame=CameraMsg(viewpoint),
                         gtcolor=viewpoint.original_image,
                         gtdepth=viewpoint.depth
                         if not self.monocular
@@ -303,10 +226,11 @@ class FrontEnd(mp.Process):
 
         curr_frame = self.cameras[cur_frame_idx]
         last_kf = self.cameras[last_keyframe_idx]
-        pose_CW = getWorld2View2(curr_frame.R, curr_frame.T)
-        last_kf_CW = getWorld2View2(last_kf.R, last_kf.T)
+        pose_CW = curr_frame.T
+        last_kf_CW = last_kf.T
         last_kf_WC = torch.linalg.inv(last_kf_CW)
         dist = torch.norm((pose_CW @ last_kf_WC)[0:3, 3])
+        
         dist_check = dist > kf_translation * self.median_depth
         dist_check2 = dist > kf_min_translation * self.median_depth
 
@@ -352,7 +276,7 @@ class FrontEnd(mp.Process):
         if to_remove:
             window.remove(to_remove[-1])
             removed_frame = to_remove[-1]
-        kf_0_WC = torch.linalg.inv(getWorld2View2(curr_frame.R, curr_frame.T))
+        kf_0_WC = torch.linalg.inv(curr_frame.T)
 
         if len(window) > self.config["Training"]["window_size"]:
             # we need to find the keyframe to remove...
@@ -361,15 +285,17 @@ class FrontEnd(mp.Process):
                 inv_dists = []
                 kf_i_idx = window[i]
                 kf_i = self.cameras[kf_i_idx]
-                kf_i_CW = getWorld2View2(kf_i.R, kf_i.T)
+                kf_i_CW = kf_i.T
                 for j in range(N_dont_touch, len(window)):
                     if i == j:
                         continue
                     kf_j_idx = window[j]
                     kf_j = self.cameras[kf_j_idx]
-                    kf_j_WC = torch.linalg.inv(getWorld2View2(kf_j.R, kf_j.T))
+                    kf_j_WC = torch.linalg.inv(kf_j.T)
+
                     T_CiCj = kf_i_CW @ kf_j_WC
                     inv_dists.append(1.0 / (torch.norm(T_CiCj[0:3, 3]) + 1e-6).item())
+
                 T_CiC0 = kf_i_CW @ kf_0_WC
                 k = torch.sqrt(torch.norm(T_CiC0[0:3, 3])).item()
                 inv_dist.append(k * sum(inv_dists))
@@ -400,8 +326,8 @@ class FrontEnd(mp.Process):
         keyframes = data[3]
         self.occ_aware_visibility = occ_aware_visibility
 
-        for kf_id, kf_R, kf_T in keyframes:
-            self.cameras[kf_id].update_RT(kf_R.clone(), kf_T.clone())
+        for kf_id, kf_T in keyframes:
+            self.cameras[kf_id].T = kf_T
 
     def cleanup(self, cur_frame_idx):
         self.cameras[cur_frame_idx].clean()
@@ -421,8 +347,7 @@ class FrontEnd(mp.Process):
             H=self.dataset.height,
         ).transpose(0, 1)
         projection_matrix = projection_matrix.to(device=self.device)
-        tic = torch.cuda.Event(enable_timing=True)
-        toc = torch.cuda.Event(enable_timing=True)
+
 
         while True:
             if self.q_vis2main.empty():
@@ -438,7 +363,6 @@ class FrontEnd(mp.Process):
                     self.backend_queue.put(["unpause"])
 
             if self.frontend_queue.empty():
-                tic.record()
                 if cur_frame_idx >= len(self.dataset):
                     if self.save_results:
                         eval_ate(
@@ -463,7 +387,7 @@ class FrontEnd(mp.Process):
                     continue
 
                 if not self.initialized and self.requested_keyframe > 0:
-                    time.sleep(0.01)
+                    time.sleep(0.001)
                     continue
 
                 viewpoint = Camera.init_from_dataset(
@@ -488,16 +412,26 @@ class FrontEnd(mp.Process):
 
                 current_window_dict = {}
                 current_window_dict[self.current_window[0]] = self.current_window[1:]
-                keyframes = [self.cameras[kf_idx] for kf_idx in self.current_window]
-
-                self.q_main2vis.put(
-                    gui_utils.GaussianPacket(
-                        gaussians=clone_obj(self.gaussians),
-                        current_frame=viewpoint,
-                        keyframes=keyframes,
-                        kf_window=current_window_dict,
+                
+                if cur_frame_idx % 5 == 0:
+                    keyframes = [CameraMsg(self.cameras[kf_idx])
+                                for kf_idx in self.current_window]
+                    self.q_main2vis.put(
+                        gui_utils.GaussianPacket(
+                            gaussians=clone_obj(self.gaussians),
+                            keyframes=keyframes,
+                            kf_window=current_window_dict,
+                        )
                     )
-                )
+                else:
+                    keyframes = [CameraMsg(self.cameras[kf_idx])
+                                for kf_idx in self.current_window]
+                    self.q_main2vis.put(
+                        gui_utils.GaussianPacket(
+                            keyframes=keyframes,
+                            kf_window=current_window_dict,
+                        )
+                    )                    
 
                 if self.requested_keyframe > 0:
                     self.cleanup(cur_frame_idx)
@@ -567,12 +501,7 @@ class FrontEnd(mp.Process):
                         cur_frame_idx,
                         monocular=self.monocular,
                     )
-                toc.record()
-                torch.cuda.synchronize()
-                if create_kf:
-                    # throttle at 3fps when keyframe is added
-                    duration = tic.elapsed_time(toc)
-                    time.sleep(max(0.01, 1.0 / 3.0 - duration / 1000))
+
             else:
                 data = self.frontend_queue.get()
                 if data[0] == "sync_backend":
