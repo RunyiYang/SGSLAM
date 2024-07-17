@@ -159,7 +159,7 @@ def get_median_depth_da(depth, opacity=None, mask=None, return_std=False):
         return valid_depth.median(), valid_depth.std(), valid
     return valid_depth.median()
 
-def l1_loss(params, predicted_depth, depth_gt, center_fraction=0.8):
+def l1_loss(params, predicted_depth, depth_gt, center_fraction=1.0):
     """
     Calculate the L1 loss using a central portion of the depth ground truth.
     
@@ -288,7 +288,7 @@ def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_
     return np.mean(loss_map), outlier_mask
 
 
-def disparity_loss(depth_render, depth_da, image):
+def disparity_loss(depth_render, depth_da):
     
     sigma_color=150
     sigma_space=150
@@ -332,14 +332,14 @@ def disparity_loss(depth_render, depth_da, image):
     np.save(f'{translation_dir}/combined_{idx}', optimal_translation)
     np.save(f'{loss_dir}/combined_{idx}', optimal_l1_loss)
     '''
-    depthmap_new = depthmap * (1 - outlier_mask)
-    depth_gt_disparity_new = depth_gt_disparity * (1 - outlier_mask)
-    result = differential_evolution(lambda params: l1_loss(params, depthmap_new, depth_gt_disparity_new)[0], bounds)
-    optimal_scale, optimal_translation = result.x
-    depth = 1 / (depthmap * optimal_scale + optimal_translation)
+    #depthmap_new = depthmap * (1 - outlier_mask)
+    #depth_gt_disparity_new = depth_gt_disparity * (1 - outlier_mask)
+    #result = differential_evolution(lambda params: l1_loss(params, depthmap_new, depth_gt_disparity_new)[0], bounds)
+    #optimal_scale, optimal_translation = result.x
+    #depth = 1 / (depthmap * optimal_scale + optimal_translation)
     #print('median predicted depth', np.median(depth))          
-    depth_gt = depth_gt * (1 - outlier_mask)  
-    optimal_l1_loss, outlier_mask_new = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
+    #depth_gt = depth_gt * (1 - outlier_mask)  
+    #optimal_l1_loss, outlier_mask_new = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
     #print('optimal_l1_loss', optimal_l1_loss)
     #depth = depth * (1 - outlier_mask)
 
