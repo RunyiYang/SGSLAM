@@ -11,7 +11,8 @@ from munch import munchify
 
 import wandb
 #from depth_anything.dpt import DepthAnything
-from depth_anything_v2.dpt import DepthAnythingV2
+#from depth_anything_v2.dpt import DepthAnythingV2
+from metric_depth.depth_anything_v2.dpt import DepthAnythingV2
 from depth_anything.util.transform import Resize, NormalizeImage, PrepareForNet
 from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.system_utils import mkdir_p
@@ -72,17 +73,20 @@ class SLAM:
 
         self.config["Results"]["save_dir"] = save_dir
         self.config["Training"]["monocular"] = self.monocular
-        encoder = 'vitb' # can also be 'vitb' or 'vitl'
-        DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
         model_configs = {
-        'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]},
-        'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768]},
-        'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024]},
-        'vitg': {'encoder': 'vitg', 'features': 384, 'out_channels': [1536, 1536, 1536, 1536]}
+            'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]},
+            'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768]},
+            'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024]}
         }
-        depth_anything = DepthAnythingV2(**model_configs[encoder])
-        depth_anything.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_{encoder}.pth', map_location='cpu'))
-        self.depth_anything = depth_anything.to(DEVICE).eval()
+
+        encoder = 'vitl' # or 'vits', 'vitb'
+        dataset = 'hypersim' # 'hypersim' for indoor model, 'vkitti' for outdoor model
+        max_depth = 20 # 20 for indoor model, 80 for outdoor model
+
+        model = DepthAnythingV2(**{**model_configs[encoder], 'max_depth': max_depth})
+        model.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_metric_{dataset}_{encoder}.pth', map_location='cpu'))
+        model.eval()
+        self.depth_anything = model
     
         total_params = sum(param.numel() for param in self.depth_anything.parameters())
         print('Total parameters: {:.2f}M'.format(total_params / 1e6))
@@ -255,7 +259,7 @@ if __name__ == "__main__":
         Log("\teval_rendering=True")
         config["Results"]["eval_rendering"] = True
         Log("\tuse_wandb=True")
-        config["Results"]["use_wandb"] = False
+        config["Results"]["use_wandb"] = True
 
     if config["Results"]["save_results"]:
         mkdir_p(config["Results"]["save_dir"])

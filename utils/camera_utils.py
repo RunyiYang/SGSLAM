@@ -78,11 +78,14 @@ class Camera(nn.Module):
                 depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
             time1 = time.time()
             with torch.no_grad():
-                depth_da = depth_anything.infer_image(image, 518)
+                depth_da = depth_anything.infer_image(image) # HxW depth map in meters in numpy
             time2 = time.time()
             #print('depth_anything time', time2 - time1)
-            
-            disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_render, depth_da, image)
+            #l1_loss = np.abs(depth_render - depth_gt1)
+            #mask = l1_loss < 0.03
+            #depth_render = depth_render * mask
+            #depth_da = depth_da * mask
+            disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_render, depth_da)
             #absolute_depth, optimal_l1_loss_absolute = disparity_loss(depth_gt1, depth_da, image)
             #disparity_depth2, optimal_l1_loss_disparity2 = disparity_loss_2(depth_render, depth_da, image)
             #if optimal_l1_loss_absolute > optimal_l1_loss_disparity:

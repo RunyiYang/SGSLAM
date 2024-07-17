@@ -81,7 +81,7 @@ class FrontEnd(mp.Process):
             #print('number of zeros of initial_depth', np.sum(initial_depth == 0))
             return initial_depth[0].numpy()
         '''
-        '''
+        
         if self.monocular:
             # use the observed depth
             initial_depth_da = viewpoint.depth
@@ -109,8 +109,8 @@ class FrontEnd(mp.Process):
                 initial_depth = initial_depth.cpu().numpy()[0]
                 #print('number of zeros of initial_depth', np.sum(initial_depth == 0))
             return initial_depth
-        '''
         
+        '''
         #print('monocular', self.monocular)
         if self.monocular:
             if depth is None:
@@ -155,7 +155,7 @@ class FrontEnd(mp.Process):
             
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
-        
+        '''
         
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
