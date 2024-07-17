@@ -128,7 +128,7 @@ class FrontEnd(mp.Process):
     def tracking(self, cur_frame_idx, viewpoint):
         prev = self.cameras[cur_frame_idx - self.use_every_n_frames]
         viewpoint.update_RT(prev.R, prev.T)
-
+        #print('cur_frame_idx', cur_frame_idx)
         opt_params = []
         opt_params.append(
             {

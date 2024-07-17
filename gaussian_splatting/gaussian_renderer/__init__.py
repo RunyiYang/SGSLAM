@@ -114,7 +114,7 @@ def render(
 
     # Rasterize visible Gaussians to image, obtain their radii (on screen).
     if mask is not None:
-        rendered_image, radii, depth, opacity = rasterizer(
+        rendered_image, radii, depth, opacity, gaussians_count, important_score = rasterizer(
             means3D=means3D[mask],
             means2D=means2D[mask],
             shs=shs[mask],
@@ -127,7 +127,7 @@ def render(
             rho=viewpoint_camera.cam_trans_delta,
         )
     else:
-        rendered_image, radii, depth, opacity, n_touched = rasterizer(
+        rendered_image, radii, depth, opacity, n_touched, gaussians_count, important_score = rasterizer(
             means3D=means3D,
             means2D=means2D,
             shs=shs,
@@ -142,6 +142,7 @@ def render(
 
     # Those Gaussians that were frustum culled or had a radius of 0 were not visible.
     # They will be excluded from value updates used in the splitting criteria.
+    #print("important_score", important_score)
     return {
         "render": rendered_image,
         "viewspace_points": screenspace_points,
@@ -150,4 +151,6 @@ def render(
         "depth": depth,
         "opacity": opacity,
         "n_touched": n_touched,
+        "gaussians_count": gaussians_count, 
+        "important_score": important_score,
     }

@@ -1,5 +1,5 @@
 import torch
-
+from gaussian_splatting.gaussian_renderer import render
 
 def image_gradient(image):
     # Compute image gradient using Scharr Filter
@@ -140,3 +140,34 @@ def get_median_depth(depth, opacity=None, mask=None, return_std=False):
     if return_std:
         return valid_depth.median(), valid_depth.std(), valid
     return valid_depth.median()
+
+def prune_list(gaussians, viewpoint_stack, pipeline_params, background):
+    gaussian_list, imp_list = None, None
+    viewpoint_cam = viewpoint_stack.pop()
+    render_pkg = render(viewpoint_cam, gaussians, pipeline_params, background)
+    gaussian_list, imp_list = (
+        render_pkg["gaussians_count"],
+        render_pkg["important_score"],
+    )
+
+    # ic(dataset.model_path)
+    for iteration in range(len(viewpoint_stack)):
+        # Pick a random Camera
+        # prunning
+        viewpoint_cam = viewpoint_stack.pop()
+        render_pkg = render(viewpoint_cam, gaussians, pipeline_params, background)
+        # image, viewspace_point_tensor, visibility_filter, radii = render_pkg["render"], render_pkg["viewspace_points"], render_pkg["visibility_filter"], render_pkg["radii"]
+        gaussians_count, important_score = (
+            render_pkg["gaussians_count"].detach(),
+            render_pkg["important_score"].detach(),
+        )
+        gaussian_list += gaussians_count
+        imp_list += important_score
+    return gaussian_list, imp_list
+
+def prune_gaussians(percent, import_score):
+    sorted_tensor, _ = torch.sort(import_score, dim=0)
+    index_nth_percentile = int(percent * (sorted_tensor.shape[0] - 1))
+    value_nth_percentile = sorted_tensor[index_nth_percentile]
+    prune_mask = (import_score <= value_nth_percentile).squeeze()
+    return prune_mask

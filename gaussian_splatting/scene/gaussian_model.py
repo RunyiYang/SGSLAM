@@ -17,6 +17,7 @@ import torch
 from plyfile import PlyData, PlyElement
 from simple_knn._C import distCUDA2
 from torch import nn
+from icecream import ic
 
 from gaussian_splatting.utils.general_utils import (
     build_rotation,

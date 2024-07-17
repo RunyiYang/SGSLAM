@@ -10,13 +10,15 @@ from gaussian_splatting.utils.loss_utils import l1_loss, ssim
 from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
-from utils.slam_utils import get_loss_mapping
+from utils.slam_utils import get_loss_mapping, prune_list, prune_gaussians
+from icecream import ic
 
 
 class BackEnd(mp.Process):
     def __init__(self, config):
         super().__init__()
         self.config = config
+        self.record = 0
         self.gaussians = None
         self.pipeline_params = None
         self.opt_params = None
@@ -139,10 +141,9 @@ class BackEnd(mp.Process):
         Log("Initialized map")
         return render_pkg
 
-    def map(self, current_window, prune=False, iters=1):
+    def map(self, current_window, cur_frame_idx, prune=False, iters=1):
         if len(current_window) == 0:
             return
-
         viewpoint_stack = [self.viewpoints[kf_idx] for kf_idx in current_window]
         random_viewpoint_stack = []
         frames_to_optimize = self.config["Training"]["pose_window"]
@@ -238,7 +239,6 @@ class BackEnd(mp.Process):
                     kf_idx = current_window[idx]
                     n_touched = n_touched_acm[idx]
                     self.occ_aware_visibility[kf_idx] = (n_touched > 0).long()
-
                 # # compute the visibility of the gaussians
                 # # Only prune on the last iteration and when we have full window
                 if prune:
@@ -250,9 +250,12 @@ class BackEnd(mp.Process):
                             self.gaussians.n_obs += visibility.cpu()
                         to_prune = None
                         if prune_mode == "odometry":
+                            ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
                             to_prune = self.gaussians.n_obs < 3
                             # make sure we don't split the gaussians, break here.
                         if prune_mode == "slam":
+                            ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
+                            print('cur_frame_idx', cur_frame_idx)
                             # only prune keyframes which are relatively new
                             sorted_window = sorted(current_window, reverse=True)
                             mask = self.gaussians.unique_kfIDs >= sorted_window[2]
@@ -261,6 +264,32 @@ class BackEnd(mp.Process):
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
+                            
+                        if prune_mode == "important_score":
+                            print('index_loop', _)
+                            #print('index', idx)
+                            #print('self.record', self.record)
+                            print('cur_frame_idx', cur_frame_idx)
+                            #if self.record == cur_frame_idx:
+                            #    continue
+                            self.record = cur_frame_idx
+                            #print('cur_frame_idx_map_local', cur_frame_idx)
+                            ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
+                            if (cur_frame_idx % 200 <= 3) or (cur_frame_idx % 200 >= 197):
+                                print('cur_frame_idx_map_global', cur_frame_idx)
+                                gaussian_list, imp_list = prune_list(self.gaussians, viewpoint_stack, self.pipeline_params, self.background)
+                                prune_percent = 0.5
+                                to_prune = prune_gaussians(
+                                    prune_percent, imp_list
+                                )
+                            else:
+                            #print('index', _)
+                                gaussian_list, imp_list = prune_list(self.gaussians, viewpoint_stack, self.pipeline_params, self.background)
+                                prune_percent = 0.2
+                                to_prune = prune_gaussians(
+                                    prune_percent, imp_list
+                                )
+                        
                         if to_prune is not None and self.monocular:
                             self.gaussians.prune_points(to_prune.cuda())
                             for idx in range((len(current_window))):
@@ -268,10 +297,12 @@ class BackEnd(mp.Process):
                                 self.occ_aware_visibility[current_idx] = (
                                     self.occ_aware_visibility[current_idx][~to_prune]
                                 )
+                        
                         if not self.initialized:
                             self.initialized = True
                             Log("Initialized SLAM")
                         # # make sure we don't split the gaussians, break here.
+                        ic("After prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
                     return False
 
                 for idx in range(len(viewspace_point_tensor_acm)):
@@ -320,7 +351,7 @@ class BackEnd(mp.Process):
     def color_refinement(self):
         Log("Starting color refinement")
 
-        iteration_total = 26000
+        iteration_total = 36000
         for iteration in tqdm(range(1, iteration_total + 1)):
             viewpoint_idx_stack = list(self.viewpoints.keys())
             viewpoint_cam_idx = viewpoint_idx_stack.pop(
@@ -377,9 +408,9 @@ class BackEnd(mp.Process):
                 if self.single_thread:
                     time.sleep(0.01)
                     continue
-                self.map(self.current_window)
+                self.map(self.current_window, cur_frame_idx)
                 if self.last_sent >= 10:
-                    self.map(self.current_window, prune=True, iters=10)
+                    self.map(self.current_window, cur_frame_idx, prune=True, iters=10)
                     self.push_to_frontend()
             else:
                 data = self.backend_queue.get()
@@ -470,8 +501,8 @@ class BackEnd(mp.Process):
                         )
                     self.keyframe_optimizers = torch.optim.Adam(opt_params)
 
-                    self.map(self.current_window, iters=iter_per_kf)
-                    self.map(self.current_window, prune=True)
+                    self.map(self.current_window, cur_frame_idx, iters=iter_per_kf)
+                    self.map(self.current_window, cur_frame_idx, prune=True)
                     self.push_to_frontend("keyframe")
                 else:
                     raise Exception("Unprocessed data", data)
