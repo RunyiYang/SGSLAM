@@ -295,6 +295,7 @@ def disparity_loss(depth_render, depth_da):
     output = depth_da.squeeze()
     depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
     # Use Differential Evolution to optimize the scale and translation
+    '''
     bounds = [(0,100000), (-5000, 10000)]
     result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt)[0], bounds)
 
@@ -314,8 +315,9 @@ def disparity_loss(depth_render, depth_da):
     optimal_l1_loss, outlier_mask_new = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
     print('optimal_l1_loss', optimal_l1_loss)
     #depth = depth * (1 - outlier_mask)
-
-    return depth, optimal_l1_loss
+    '''
+    depth = depthmap
+    return depth, 0
 
 def absolute_loss(depth_render, depth_da, image):
     sigma_color=150
