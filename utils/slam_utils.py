@@ -101,7 +101,7 @@ def get_loss_mapping(config, image, depth, viewpoint, opacity, initialization=Fa
     if config["Training"]["use_depth_loss"]:
         return get_loss_mapping_rgbd(config, image_ab, depth, viewpoint)
     elif config["Training"]["monocular"]:
-            return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
+        return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
 
 
 def get_loss_mapping_rgb(config, image, depth, viewpoint):

@@ -34,6 +34,8 @@ Training:
   pose_window: 3
   edge_threshold: 1.1
   rgb_boundary_threshold: 0.01
+  use_depth_loss: True
+  use_mono_trick: True
   alpha: 0.9
   kf_translation: 0.08
   kf_min_translation: 0.05
