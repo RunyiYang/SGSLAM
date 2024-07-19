@@ -74,66 +74,16 @@ class FrontEnd(mp.Process):
         gt_img = viewpoint.original_image.cuda()
         
         valid_rgb = (gt_img.sum(dim=0) > rgb_boundary_threshold)[None]
-        
-        '''
         if self.monocular:
-            # use the observed depth
-            initial_depth_da = viewpoint.depth
-            if depth is None:
-                initial_depth = initial_depth_da
-            else:
-                depth = torch.from_numpy(initial_depth_da).unsqueeze(0).cuda()
-                opacity = opacity.detach()
-                median_depth, std, valid_mask = get_median_depth_da(
-                    depth, opacity, mask=valid_rgb, return_std=True
-                )
-                invalid_depth_mask = torch.logical_or(
-                    depth > median_depth + std, depth < median_depth - std
-                )
-                invalid_depth_mask = torch.logical_or(
-                    invalid_depth_mask, ~valid_mask
-                )
-                #print('number of zeros of invalid_depth_mask', np.sum(invalid_depth_mask == 0))
-                #depth[invalid_depth_mask] = median_depth
-                initial_depth = depth
-                #initial_depth = depth + torch.randn_like(depth) * torch.where(
-                #    invalid_depth_mask, std * 0.5, std * 0.2
-                #)
-                #initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
-                initial_depth = initial_depth.cpu().numpy()[0]
-                #print('number of zeros of initial_depth', np.sum(initial_depth == 0))
-            return initial_depth
-        '''
-        
-        #print('monocular', self.monocular)
-        if self.monocular:
-            if depth is None:
-                initial_depth = 2 * torch.ones(1, gt_img.shape[1], gt_img.shape[2])
-                initial_depth += torch.randn_like(initial_depth) * 0.3
-            else:
+            if self.config["Training"]["use_mono_trick"]:
+                # use the observed depth
                 initial_depth_da = viewpoint.depth
-                depth = torch.from_numpy(initial_depth_da).unsqueeze(0).cuda()
-                opacity = opacity.detach()
-                use_inv_depth = False
-                if use_inv_depth:
-                    inv_depth = 1.0 / depth
-                    inv_median_depth, inv_std, valid_mask = get_median_depth(
-                        inv_depth, opacity, mask=valid_rgb, return_std=True
-                    )
-                    invalid_depth_mask = torch.logical_or(
-                        inv_depth > inv_median_depth + inv_std,
-                        inv_depth < inv_median_depth - inv_std,
-                    )
-                    invalid_depth_mask = torch.logical_or(
-                        invalid_depth_mask, ~valid_mask
-                    )
-                    inv_depth[invalid_depth_mask] = inv_median_depth
-                    inv_initial_depth = inv_depth + torch.randn_like(
-                        inv_depth
-                    ) * torch.where(invalid_depth_mask, inv_std * 0.5, inv_std * 0.2)
-                    initial_depth = 1.0 / inv_initial_depth
+                if depth is None:
+                    initial_depth = initial_depth_da
                 else:
-                    median_depth, std, valid_mask = get_median_depth(
+                    depth = torch.from_numpy(initial_depth_da).unsqueeze(0).cuda()
+                    opacity = opacity.detach()
+                    median_depth, std, valid_mask = get_median_depth_da(
                         depth, opacity, mask=valid_rgb, return_std=True
                     )
                     invalid_depth_mask = torch.logical_or(
@@ -142,13 +92,52 @@ class FrontEnd(mp.Process):
                     invalid_depth_mask = torch.logical_or(
                         invalid_depth_mask, ~valid_mask
                     )
-                    depth[invalid_depth_mask] = median_depth
-                    initial_depth = depth + torch.randn_like(depth) * torch.where(
-                        invalid_depth_mask, std * 0.5, std * 0.2
-                    )
-            
-                initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
-            return initial_depth.cpu().numpy()[0]
+                    initial_depth = depth
+                    initial_depth = initial_depth.cpu().numpy()[0]
+                return initial_depth
+            else:
+                if depth is None:
+                    initial_depth = 2 * torch.ones(1, gt_img.shape[1], gt_img.shape[2])
+                    initial_depth += torch.randn_like(initial_depth) * 0.3
+                else:
+                    initial_depth_da = viewpoint.depth
+                    depth = torch.from_numpy(initial_depth_da).unsqueeze(0).cuda()
+                    opacity = opacity.detach()
+                    use_inv_depth = False
+                    if use_inv_depth:
+                        inv_depth = 1.0 / depth
+                        inv_median_depth, inv_std, valid_mask = get_median_depth(
+                            inv_depth, opacity, mask=valid_rgb, return_std=True
+                        )
+                        invalid_depth_mask = torch.logical_or(
+                            inv_depth > inv_median_depth + inv_std,
+                            inv_depth < inv_median_depth - inv_std,
+                        )
+                        invalid_depth_mask = torch.logical_or(
+                            invalid_depth_mask, ~valid_mask
+                        )
+                        inv_depth[invalid_depth_mask] = inv_median_depth
+                        inv_initial_depth = inv_depth + torch.randn_like(
+                            inv_depth
+                        ) * torch.where(invalid_depth_mask, inv_std * 0.5, inv_std * 0.2)
+                        initial_depth = 1.0 / inv_initial_depth
+                    else:
+                        median_depth, std, valid_mask = get_median_depth(
+                            depth, opacity, mask=valid_rgb, return_std=True
+                        )
+                        invalid_depth_mask = torch.logical_or(
+                            depth > median_depth + std, depth < median_depth - std
+                        )
+                        invalid_depth_mask = torch.logical_or(
+                            invalid_depth_mask, ~valid_mask
+                        )
+                        depth[invalid_depth_mask] = median_depth
+                        initial_depth = depth + torch.randn_like(depth) * torch.where(
+                            invalid_depth_mask, std * 0.5, std * 0.2
+                        )
+                
+                    initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
+                return initial_depth.cpu().numpy()[0]
             
         
         

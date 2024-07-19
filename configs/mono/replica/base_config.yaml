@@ -51,6 +51,8 @@ Training:
   rgb_boundary_threshold: 0.01
   kf_translation: 0.04
   kf_min_translation: 0.02
+  use_depth_loss: True
+  use_mono_trick: True
   kf_overlap: 0.95
   prune_mode: 'slam'
   single_thread: True
