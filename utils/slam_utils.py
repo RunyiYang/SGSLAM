@@ -60,8 +60,8 @@ def depth_reg(depth, gt_image, huber_eps=0.1, mask=None):
 
 def get_loss_tracking(config, image, depth, opacity, viewpoint, initialization=False):
     image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    #if config["Training"]["monocular"]:
-    #    return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
+    if config["Training"]["monocular"]:
+        return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
     return get_loss_tracking_rgbd(config, image_ab, depth, opacity, viewpoint)
 
 
@@ -98,8 +98,8 @@ def get_loss_mapping(config, image, depth, viewpoint, opacity, initialization=Fa
         image_ab = image
     else:
         image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    #if config["Training"]["monocular"]:
-    #    return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
+    if config["Training"]["monocular"]:
+        return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
     return get_loss_mapping_rgbd(config, image_ab, depth, viewpoint)
 
 
@@ -289,33 +289,12 @@ def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_
 
 
 def disparity_loss(depth_render, depth_da):
-    depth_gt = depth_render
+    #depth_gt = depth_render
     sigma_color=150
     sigma_space=150
     output = depth_da.squeeze()
     depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
     # Use Differential Evolution to optimize the scale and translation
-    '''
-    bounds = [(0,100000), (-5000, 10000)]
-    result = differential_evolution(lambda params: l1_loss(params, depthmap, depth_gt)[0], bounds)
-
-    # Check the results
-    optimal_scale, optimal_translation = result.x
-    depth = depthmap * optimal_scale + optimal_translation
-    print('median predicted depth', np.median(depth))
-    optimal_l1_loss, outlier_mask = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
-    print('before_optimal_l1_loss', optimal_l1_loss)
-    depthmap_new = depthmap * (1 - outlier_mask)
-    depth_gt_disparity_new = depth_gt * (1 - outlier_mask)
-    result = differential_evolution(lambda params: l1_loss(params, depthmap_new, depth_gt_disparity_new)[0], bounds)
-    optimal_scale, optimal_translation = result.x
-    depth = depthmap * optimal_scale + optimal_translation
-    #print('median predicted depth', np.median(depth))          
-    depth_gt = depth_gt * (1 - outlier_mask)  
-    optimal_l1_loss, outlier_mask_new = l1_loss_calculate(optimal_scale, optimal_translation, depth, depth_gt)
-    print('optimal_l1_loss', optimal_l1_loss)
-    #depth = depth * (1 - outlier_mask)
-    '''
     depth = depthmap
     return depth, 0
 

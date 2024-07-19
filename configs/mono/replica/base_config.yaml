@@ -49,7 +49,6 @@ Training:
   pose_window: 5
   edge_threshold: 4
   rgb_boundary_threshold: 0.01
-
   kf_translation: 0.04
   kf_min_translation: 0.02
   kf_overlap: 0.95
