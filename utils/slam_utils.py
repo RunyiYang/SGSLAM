@@ -288,7 +288,7 @@ def l1_loss_calculate(scale, translation, predicted_depth, depth_gt, percentile_
     return np.mean(loss_map), outlier_mask
 
 
-def disparity_loss(depth_render, depth_da):
+def disparity_loss(depth_da):
     #depth_gt = depth_render
     sigma_color=150
     sigma_space=150

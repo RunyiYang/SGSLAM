@@ -73,28 +73,11 @@ class Camera(nn.Module):
         gt_color, gt_depth, gt_pose, raw_image = dataset[idx]
         #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
         def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input, c_dispairty, c_absolute):
-            depth_render = depth_gt1
-            if render_pkg_input != 0:
-                depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
             time1 = time.time()
             with torch.no_grad():
                 depth_da = depth_anything.infer_image(image) # HxW depth map in meters in numpy
             time2 = time.time()
-            #print('depth_anything time', time2 - time1)
-            #l1_loss = np.abs(depth_render - depth_gt1)
-            #mask = l1_loss < 0.03
-            #depth_render = depth_render * mask
-            #depth_da = depth_da * mask
-            disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_render, depth_da)
-            #absolute_depth, optimal_l1_loss_absolute = disparity_loss(depth_gt1, depth_da, image)
-            #disparity_depth2, optimal_l1_loss_disparity2 = disparity_loss_2(depth_render, depth_da, image)
-            #if optimal_l1_loss_absolute > optimal_l1_loss_disparity:
-            #    depth = disparity_depth
-            #else:
-            #    depth = absolute_depth
-            #depth = (disparity_depth + absolute_depth) / 2.0
-
-            #save_depth_images(disparity_depth, optimal_l1_loss_disparity, absolute_depth, optimal_l1_loss_absolute, cur_frame_idx, depth_gt1, depth_render)
+            disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_da)
             return disparity_depth
         
         depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)

@@ -75,7 +75,7 @@ class FrontEnd(mp.Process):
         
         valid_rgb = (gt_img.sum(dim=0) > rgb_boundary_threshold)[None]
         
-        
+        '''
         if self.monocular:
             # use the observed depth
             initial_depth_da = viewpoint.depth
@@ -149,7 +149,7 @@ class FrontEnd(mp.Process):
             
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
-            '''
+            
         
         
         # use the observed depth
