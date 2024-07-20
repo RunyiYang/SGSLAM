@@ -10,6 +10,10 @@ import yaml
 from munch import munchify
 
 import wandb
+#from depth_anything.dpt import DepthAnything
+#from depth_anything_v2.dpt import DepthAnythingV2
+from metric_depth.depth_anything_v2.dpt import DepthAnythingV2
+from depth_anything.util.transform import Resize, NormalizeImage, PrepareForNet
 from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.system_utils import mkdir_p
 from gui import gui_utils, slam_gui
@@ -20,7 +24,8 @@ from utils.logging_utils import Log
 from utils.multiprocessing_utils import FakeQueue
 from utils.slam_backend import BackEnd
 from utils.slam_frontend import FrontEnd
-
+import cv2
+from torchvision.transforms import Compose
 
 class SLAM:
     def __init__(self, config, save_dir=None):
@@ -68,8 +73,38 @@ class SLAM:
 
         self.config["Results"]["save_dir"] = save_dir
         self.config["Training"]["monocular"] = self.monocular
+        model_configs = {
+            'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]},
+            'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768]},
+            'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024]}
+        }
 
-        self.frontend = FrontEnd(self.config)
+        encoder = 'vitl' # or 'vits', 'vitb'
+        dataset = 'hypersim' # 'hypersim' for indoor model, 'vkitti' for outdoor model
+        max_depth = 20 # 20 for indoor model, 80 for outdoor model
+
+        model = DepthAnythingV2(**{**model_configs[encoder], 'max_depth': max_depth})
+        model.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_metric_{dataset}_{encoder}.pth', map_location='cpu'))
+        model.eval()
+        self.depth_anything = model
+    
+        total_params = sum(param.numel() for param in self.depth_anything.parameters())
+        print('Total parameters: {:.2f}M'.format(total_params / 1e6))
+    
+        self.transform = Compose([
+            Resize(
+                width=518,
+                height=518,
+                resize_target=False,
+                keep_aspect_ratio=True,
+                ensure_multiple_of=14,
+                resize_method='lower_bound',
+                image_interpolation_method=cv2.INTER_CUBIC,
+            ),
+            NormalizeImage(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            PrepareForNet(),
+        ])
+        self.frontend = FrontEnd(self.config, self.depth_anything, self.transform)
         self.backend = BackEnd(self.config)
 
         self.frontend.dataset = self.dataset

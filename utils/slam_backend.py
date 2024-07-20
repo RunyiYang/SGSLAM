@@ -12,6 +12,7 @@ from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
 from utils.slam_utils import get_loss_mapping, prune_list, prune_gaussians
 from icecream import ic
+import numpy as np
 
 
 class BackEnd(mp.Process):
@@ -34,6 +35,7 @@ class BackEnd(mp.Process):
         self.monocular = config["Training"]["monocular"]
         self.iteration_count = 0
         self.last_sent = 0
+        self.imp_list = torch.zeros(0)
         self.occ_aware_visibility = {}
         self.viewpoints = {}
         self.current_window = []
@@ -256,6 +258,7 @@ class BackEnd(mp.Process):
                         if prune_mode == "slam":
                             ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
                             print('cur_frame_idx', cur_frame_idx)
+                            print('iters', iters)
                             # only prune keyframes which are relatively new
                             sorted_window = sorted(current_window, reverse=True)
                             mask = self.gaussians.unique_kfIDs >= sorted_window[2]
@@ -264,33 +267,33 @@ class BackEnd(mp.Process):
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
-                            
+                            print('to_prune size', torch.sum(to_prune).item())
                         if prune_mode == "important_score":
-                            print('index_loop', _)
-                            #print('index', idx)
-                            #print('self.record', self.record)
                             print('cur_frame_idx', cur_frame_idx)
-                            #if self.record == cur_frame_idx:
-                            #    continue
-                            self.record = cur_frame_idx
-                            #print('cur_frame_idx_map_local', cur_frame_idx)
+                            print('iters', iters)
                             ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
+                            time1 = time.time()
+                            if self.record != cur_frame_idx or self.imp_list.size(0) != len(self.gaussians.get_xyz):
+                                print('run')
+                                gaussian_list, self.imp_list = prune_list(self.gaussians, viewpoint_stack, self.pipeline_params, self.background)
+                            time2 = time.time()
+                            '''
                             if (cur_frame_idx % 200 <= 3) or (cur_frame_idx % 200 >= 197):
-                                print('cur_frame_idx_map_global', cur_frame_idx)
-                                gaussian_list, imp_list = prune_list(self.gaussians, viewpoint_stack, self.pipeline_params, self.background)
                                 prune_percent = 0.5
-                                to_prune = prune_gaussians(
-                                    prune_percent, imp_list
+                                to_prune, self.imp_list = prune_gaussians(
+                                    prune_percent, self.imp_list
                                 )
                             else:
-                            #print('index', _)
-                                gaussian_list, imp_list = prune_list(self.gaussians, viewpoint_stack, self.pipeline_params, self.background)
-                                prune_percent = 0.2
-                                to_prune = prune_gaussians(
-                                    prune_percent, imp_list
-                                )
+                            '''
+                            prune_percent = 0.2
+                            to_prune, self.imp_list = prune_gaussians(
+                                prune_percent, self.imp_list
+                            )
+                            self.record = cur_frame_idx
+                            print('to_prune size', torch.sum(to_prune).item())
                         
-                        if to_prune is not None and self.monocular:
+                        if to_prune is not None:
+                            print('run')
                             self.gaussians.prune_points(to_prune.cuda())
                             for idx in range((len(current_window))):
                                 current_idx = current_window[idx]

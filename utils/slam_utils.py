@@ -1,5 +1,6 @@
 import torch
 from gaussian_splatting.gaussian_renderer import render
+import cv2
 
 def image_gradient(image):
     # Compute image gradient using Scharr Filter
@@ -55,8 +56,8 @@ def depth_reg(depth, gt_image, huber_eps=0.1, mask=None):
 
 def get_loss_tracking(config, image, depth, opacity, viewpoint, initialization=False):
     image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    if config["Training"]["monocular"]:
-        return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
+    #if config["Training"]["monocular"]:
+    #    return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
     return get_loss_tracking_rgbd(config, image_ab, depth, opacity, viewpoint)
 
 
@@ -93,8 +94,8 @@ def get_loss_mapping(config, image, depth, viewpoint, opacity, initialization=Fa
         image_ab = image
     else:
         image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    if config["Training"]["monocular"]:
-        return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
+    #if config["Training"]["monocular"]:
+    #    return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
     return get_loss_mapping_rgbd(config, image_ab, depth, viewpoint)
 
 
@@ -166,8 +167,20 @@ def prune_list(gaussians, viewpoint_stack, pipeline_params, background):
     return gaussian_list, imp_list
 
 def prune_gaussians(percent, import_score):
+    #print('imporatant score', import_score.shape)
     sorted_tensor, _ = torch.sort(import_score, dim=0)
     index_nth_percentile = int(percent * (sorted_tensor.shape[0] - 1))
     value_nth_percentile = sorted_tensor[index_nth_percentile]
     prune_mask = (import_score <= value_nth_percentile).squeeze()
-    return prune_mask
+    pruned_import_score = import_score[~prune_mask]
+    return prune_mask, pruned_import_score
+
+def disparity_loss(depth_da):
+    #depth_gt = depth_render
+    sigma_color=150
+    sigma_space=150
+    output = depth_da.squeeze()
+    depthmap = cv2.bilateralFilter(output, d=9, sigmaColor=sigma_color, sigmaSpace=sigma_space)
+    # Use Differential Evolution to optimize the scale and translation
+    depth = depthmap
+    return depth, 0

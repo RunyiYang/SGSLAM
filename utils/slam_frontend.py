@@ -13,13 +13,23 @@ from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
 from utils.slam_utils import get_loss_tracking, get_median_depth
+from PIL import Image
+import cv2
+import torch.nn.functional as F
+from scipy.optimize import minimize_scalar
+from scipy.optimize import minimize
+from scipy.optimize import differential_evolution
 
 
 class FrontEnd(mp.Process):
-    def __init__(self, config):
+    def __init__(self, config, depth_anything, transform):
         super().__init__()
         self.config = config
+        self.depth_anything = depth_anything
+        self.transform = transform
         self.background = None
+        self.c_dispairty = []
+        self.c_absolute = []
         self.pipeline_params = None
         self.frontend_queue = None
         self.backend_queue = None
@@ -27,11 +37,13 @@ class FrontEnd(mp.Process):
         self.q_vis2main = None
 
         self.initialized = False
+        self.render_pkg_input = 0
         self.kf_indices = []
         self.monocular = config["Training"]["monocular"]
         self.iteration_count = 0
         self.occ_aware_visibility = {}
         self.current_window = []
+        self.DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
         self.reset = True
         self.requested_init = False
@@ -52,20 +64,37 @@ class FrontEnd(mp.Process):
         self.tracking_itr_num = self.config["Training"]["tracking_itr_num"]
         self.kf_interval = self.config["Training"]["kf_interval"]
         self.window_size = self.config["Training"]["window_size"]
-        self.single_thread = self.config["Training"]["single_thread"]
-
+        self.single_thread = self.config["Training"]["single_thread"]        
+    
     def add_new_keyframe(self, cur_frame_idx, depth=None, opacity=None, init=False):
+        #print('keyframe number', cur_frame_idx)
         rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
         self.kf_indices.append(cur_frame_idx)
         viewpoint = self.cameras[cur_frame_idx]
         gt_img = viewpoint.original_image.cuda()
+        
         valid_rgb = (gt_img.sum(dim=0) > rgb_boundary_threshold)[None]
+        '''
+        if self.monocular:
+            # use the observed depth
+            initial_depth_da = viewpoint.depth
+            if depth is None:
+                initial_depth = initial_depth_da
+            else:
+                depth = torch.from_numpy(initial_depth_da).unsqueeze(0).cuda()
+                initial_depth = depth
+                initial_depth = initial_depth.cpu().numpy()[0]
+            return initial_depth
+        '''
+        
+        #print('monocular', self.monocular)
         if self.monocular:
             if depth is None:
                 initial_depth = 2 * torch.ones(1, gt_img.shape[1], gt_img.shape[2])
                 initial_depth += torch.randn_like(initial_depth) * 0.3
             else:
-                depth = depth.detach().clone()
+                initial_depth_da = viewpoint.depth
+                depth = torch.from_numpy(initial_depth_da).unsqueeze(0).cuda()
                 opacity = opacity.detach()
                 use_inv_depth = False
                 if use_inv_depth:
@@ -99,9 +128,11 @@ class FrontEnd(mp.Process):
                     initial_depth = depth + torch.randn_like(depth) * torch.where(
                         invalid_depth_mask, std * 0.5, std * 0.2
                     )
-
+            
                 initial_depth[~valid_rgb] = 0  # Ignore the invalid rgb pixels
             return initial_depth.cpu().numpy()[0]
+        
+        
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
         initial_depth[~valid_rgb.cpu()] = 0  # Ignore the invalid rgb pixels
@@ -128,7 +159,7 @@ class FrontEnd(mp.Process):
     def tracking(self, cur_frame_idx, viewpoint):
         prev = self.cameras[cur_frame_idx - self.use_every_n_frames]
         viewpoint.update_RT(prev.R, prev.T)
-        #print('cur_frame_idx', cur_frame_idx)
+
         opt_params = []
         opt_params.append(
             {
@@ -370,9 +401,9 @@ class FrontEnd(mp.Process):
                 if not self.initialized and self.requested_keyframe > 0:
                     time.sleep(0.01)
                     continue
-
+                rgb_boundary_threshold = self.config["Training"]["rgb_boundary_threshold"]
                 viewpoint = Camera.init_from_dataset(
-                    self.dataset, cur_frame_idx, projection_matrix
+                    self.dataset, cur_frame_idx, projection_matrix, rgb_boundary_threshold, self.depth_anything, self.c_dispairty, self.c_absolute, self.config, self.render_pkg_input
                 )
                 viewpoint.compute_grad_mask(self.config)
 
@@ -390,7 +421,7 @@ class FrontEnd(mp.Process):
 
                 # Tracking
                 render_pkg = self.tracking(cur_frame_idx, viewpoint)
-
+                self.render_pkg_input = render_pkg
                 current_window_dict = {}
                 current_window_dict[self.current_window[0]] = self.current_window[1:]
                 keyframes = [self.cameras[kf_idx] for kf_idx in self.current_window]

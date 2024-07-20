@@ -34,7 +34,7 @@ Training:
   pose_window: 3
   edge_threshold: 1.1
   rgb_boundary_threshold: 0.01
-
+  alpha: 0.85
   kf_translation: 0.08
   kf_min_translation: 0.05
   kf_overlap: 0.9
