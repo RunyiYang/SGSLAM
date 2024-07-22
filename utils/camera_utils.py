@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from scipy.optimize import differential_evolution
 
 from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2, getWorld2View2
-from utils.slam_utils import image_gradient, image_gradient_mask, disparity_loss
+from utils.slam_utils import image_gradient, image_gradient_mask, disparity_loss, save_depth_image_with_viridis
 
 
 class Camera(nn.Module):
@@ -74,17 +74,30 @@ class Camera(nn.Module):
         gt_color, gt_depth, gt_pose, raw_image = dataset[idx]
         #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
         def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input, c_dispairty, c_absolute):
+            depth_render = depth_gt1
+            if render_pkg_input != 0:
+                depth_render = render_pkg_input["depth"].detach().cpu().numpy()[0]
+            
             with torch.no_grad():
                 depth_da = depth_anything.infer_image(image) # HxW depth map in meters in numpy
             time2 = time.time()
             disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_da)
+            output_path_da2_metric = './tum_desk_paper_images/da2_metric/' + str(idx) +'.png'
+            output_path_gt = './tum_desk_paper_images/gt_depth/' + str(idx) +'.png'
+            output_path_render = './tum_desk_paper_images/render_depth/' + str(idx) +'.png'
+            #output_path_gt_rgb = './tum_desk_paper_images/gt_rgb/' + str(idx) +'.png'
+            #save_depth_image_with_viridis(disparity_depth, output_path_da2_metric)
+            #save_depth_image_with_viridis(depth_gt1, output_path_gt)
+            #save_depth_image_with_viridis(image, output_path_gt_rgb)
             return disparity_depth
         
-        depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
+        #depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
+        #output_path_gt_rgb = './tum_desk_paper_images/gt_rgb/' + str(idx) +'.png'
+        #cv2.imwrite(output_path_gt_rgb, raw_image)
         return Camera(
             idx,
             gt_color,
-            depth_anything_depth_output,
+            gt_depth,
             gt_pose,
             projection_matrix,
             dataset.fx,

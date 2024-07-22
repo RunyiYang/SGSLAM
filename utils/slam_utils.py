@@ -1,6 +1,7 @@
 import torch
 from gaussian_splatting.gaussian_renderer import render
 import cv2
+import numpy as np
 
 def image_gradient(image):
     # Compute image gradient using Scharr Filter
@@ -56,8 +57,8 @@ def depth_reg(depth, gt_image, huber_eps=0.1, mask=None):
 
 def get_loss_tracking(config, image, depth, opacity, viewpoint, initialization=False):
     image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    #if config["Training"]["monocular"]:
-    #    return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
+    if config["Training"]["monocular"]:
+        return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
     return get_loss_tracking_rgbd(config, image_ab, depth, opacity, viewpoint)
 
 
@@ -94,8 +95,8 @@ def get_loss_mapping(config, image, depth, viewpoint, opacity, initialization=Fa
         image_ab = image
     else:
         image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    #if config["Training"]["monocular"]:
-    #    return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
+    if config["Training"]["monocular"]:
+        return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
     return get_loss_mapping_rgbd(config, image_ab, depth, viewpoint)
 
 
@@ -184,3 +185,14 @@ def disparity_loss(depth_da):
     # Use Differential Evolution to optimize the scale and translation
     depth = depthmap
     return depth, 0
+
+def save_depth_image_with_viridis(depth_image, output_path):
+    # Normalize the depth image to fit within the range 0-255 as uint8
+    depth_normalized = cv2.normalize(depth_image * 5000.0, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
+    depth_normalized = depth_normalized.astype(np.uint8)
+
+    # Apply the viridis colormap
+    depth_colored = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_VIRIDIS)
+
+    # Save the colored depth image
+    cv2.imwrite(output_path, depth_colored)

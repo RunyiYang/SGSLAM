@@ -112,6 +112,30 @@ def eval_ate(frames, kf_ids, save_dir, iterations, final=False, monocular=False)
     wandb.log({"frame_idx": latest_frame_idx, "ate": ate})
     return ate
 
+def save_tensor_as_image(tensor, output_path):
+    # Check if the tensor is on a CUDA device and move it to CPU
+    if tensor.is_cuda:
+        tensor = tensor.cpu()
+    
+    # Normalize the tensor to [0, 255] if it's not already
+    if tensor.min() < 0 or tensor.max() > 1:
+        tensor = (tensor - tensor.min()) / (tensor.max() - tensor.min())  # Normalize to [0, 1]
+        tensor = tensor * 255  # Scale to [0, 255]
+
+    # Convert to uint8
+    tensor = tensor.to(torch.uint8)
+    
+    # Convert from PyTorch (Channels-First) to OpenCV (Channels-Last) format
+    tensor = tensor.permute(1, 2, 0)  # C x H x W to H x W x C
+
+    # Convert the tensor to a numpy array
+    numpy_image = tensor.numpy()
+
+    # OpenCV expects images in BGR format, converting from RGB to BGR
+    numpy_image = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
+
+    # Save the image using OpenCV
+    cv2.imwrite(output_path, numpy_image)
 
 def eval_rendering(
     frames,
@@ -138,6 +162,11 @@ def eval_rendering(
         gt_image, _, _, _ = dataset[idx]
         
         rendering = render(frame, gaussians, pipe, background)["render"]
+        #print('img shape', rendering.shape)
+        if iteration == "after_opt":
+            output_path = './tum_desk_paper_images/render_rgb_rgb_baseline/' + str(idx) +'.jpg'
+            save_tensor_as_image(rendering, output_path)
+            
         #image = torch.clamp(rendering, 0.0, 1.0)
         #print('idx', idx)
         #print('frame', frame)

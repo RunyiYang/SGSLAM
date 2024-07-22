@@ -254,11 +254,12 @@ class BackEnd(mp.Process):
                         if prune_mode == "odometry":
                             ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
                             to_prune = self.gaussians.n_obs < 3
+                            
                             # make sure we don't split the gaussians, break here.
                         if prune_mode == "slam":
-                            ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
-                            print('cur_frame_idx', cur_frame_idx)
-                            print('iters', iters)
+                            #ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
+                            #print('cur_frame_idx', cur_frame_idx)
+                            #print('iters', iters)
                             # only prune keyframes which are relatively new
                             sorted_window = sorted(current_window, reverse=True)
                             mask = self.gaussians.unique_kfIDs >= sorted_window[2]
@@ -267,7 +268,7 @@ class BackEnd(mp.Process):
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
-                            print('to_prune size', torch.sum(to_prune).item())
+                            #print('to_prune size', torch.sum(to_prune).item())
                         if prune_mode == "important_score":
                             print('cur_frame_idx', cur_frame_idx)
                             print('iters', iters)
@@ -305,6 +306,7 @@ class BackEnd(mp.Process):
                             self.initialized = True
                             Log("Initialized SLAM")
                         # # make sure we don't split the gaussians, break here.
+                        #np.save(f'/home/wenxuan/MonoGS/tum_desk_paper_images/number_of_gaussians_slam_ic/combined_{cur_frame_idx}', len(self.gaussians.get_xyz))
                         ic("After prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
                     return False
 
@@ -354,7 +356,7 @@ class BackEnd(mp.Process):
     def color_refinement(self):
         Log("Starting color refinement")
 
-        iteration_total = 36000
+        iteration_total = 26000
         for iteration in tqdm(range(1, iteration_total + 1)):
             viewpoint_idx_stack = list(self.viewpoints.keys())
             viewpoint_cam_idx = viewpoint_idx_stack.pop(
