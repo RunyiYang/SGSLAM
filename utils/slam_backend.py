@@ -286,7 +286,7 @@ class BackEnd(mp.Process):
                             # Sorting self.imp_list assuming it's a 1D tensor for simplicity, you might need to adjust if it's multidimensional
                             prune_percent = 0.2
                             to_prune = prune_gaussians_threshold(
-                                50, imp_list
+                                20, imp_list
                             )
                             self.record = cur_frame_idx
                             print('to_prune size', torch.sum(to_prune).item())
