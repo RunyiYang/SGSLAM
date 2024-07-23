@@ -10,7 +10,7 @@ from gaussian_splatting.utils.loss_utils import l1_loss, ssim
 from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
-from utils.slam_utils import get_loss_mapping, prune_list, prune_gaussians
+from utils.slam_utils import get_loss_mapping, prune_list, prune_gaussians, prune_gaussians_threshold
 from icecream import ic
 import numpy as np
 
@@ -274,10 +274,7 @@ class BackEnd(mp.Process):
                             print('iters', iters)
                             ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
                             time1 = time.time()
-                            if self.record != cur_frame_idx or self.imp_list.size(0) != len(self.gaussians.get_xyz):
-                                print('run')
-                                gaussian_list, self.imp_list = prune_list(self.gaussians, viewpoint_stack, self.pipeline_params, self.background)
-                            time2 = time.time()
+                            gaussian_list, imp_list = prune_list(self.gaussians, viewpoint_stack, self.pipeline_params, self.background)
                             '''
                             if (cur_frame_idx % 200 <= 3) or (cur_frame_idx % 200 >= 197):
                                 prune_percent = 0.5
@@ -286,9 +283,10 @@ class BackEnd(mp.Process):
                                 )
                             else:
                             '''
+                            # Sorting self.imp_list assuming it's a 1D tensor for simplicity, you might need to adjust if it's multidimensional
                             prune_percent = 0.2
-                            to_prune, self.imp_list = prune_gaussians(
-                                prune_percent, self.imp_list
+                            to_prune = prune_gaussians_threshold(
+                                50, imp_list
                             )
                             self.record = cur_frame_idx
                             print('to_prune size', torch.sum(to_prune).item())

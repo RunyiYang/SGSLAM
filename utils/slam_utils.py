@@ -57,8 +57,8 @@ def depth_reg(depth, gt_image, huber_eps=0.1, mask=None):
 
 def get_loss_tracking(config, image, depth, opacity, viewpoint, initialization=False):
     image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    if config["Training"]["monocular"]:
-        return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
+    #if config["Training"]["monocular"]:
+    #    return get_loss_tracking_rgb(config, image_ab, depth, opacity, viewpoint)
     return get_loss_tracking_rgbd(config, image_ab, depth, opacity, viewpoint)
 
 
@@ -95,8 +95,8 @@ def get_loss_mapping(config, image, depth, viewpoint, opacity, initialization=Fa
         image_ab = image
     else:
         image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
-    if config["Training"]["monocular"]:
-        return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
+    #if config["Training"]["monocular"]:
+    #    return get_loss_mapping_rgb(config, image_ab, depth, viewpoint)
     return get_loss_mapping_rgbd(config, image_ab, depth, viewpoint)
 
 
@@ -175,6 +175,26 @@ def prune_gaussians(percent, import_score):
     prune_mask = (import_score <= value_nth_percentile).squeeze()
     pruned_import_score = import_score[~prune_mask]
     return prune_mask, pruned_import_score
+
+def prune_gaussians_threshold(threshold, import_score):
+    """
+    Prunes elements of import_score based on a threshold value.
+
+    Parameters:
+        threshold (float): The cutoff value below which elements are pruned.
+        import_score (torch.Tensor): The tensor of scores to be pruned.
+
+    Returns:
+        torch.Tensor: A mask indicating which elements were pruned (True if pruned).
+        torch.Tensor: The pruned tensor with elements above the threshold.
+    """
+    # Create a boolean mask where True values indicate scores <= threshold
+    prune_mask = (import_score <= threshold).squeeze()
+    
+    # Use the mask to select elements that are above the threshold
+    pruned_import_score = import_score[~prune_mask]
+
+    return prune_mask
 
 def disparity_loss(depth_da):
     #depth_gt = depth_render

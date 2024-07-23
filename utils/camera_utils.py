@@ -91,13 +91,13 @@ class Camera(nn.Module):
             #save_depth_image_with_viridis(image, output_path_gt_rgb)
             return disparity_depth
         
-        #depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
+        depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
         #output_path_gt_rgb = './tum_desk_paper_images/gt_rgb/' + str(idx) +'.png'
         #cv2.imwrite(output_path_gt_rgb, raw_image)
         return Camera(
             idx,
             gt_color,
-            gt_depth,
+            depth_anything_depth_output,
             gt_pose,
             projection_matrix,
             dataset.fx,
