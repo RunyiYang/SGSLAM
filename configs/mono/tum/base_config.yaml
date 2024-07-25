@@ -39,7 +39,7 @@ Training:
   kf_min_translation: 0.05
   kf_overlap: 0.9
   kf_cutoff: 0.3
-  prune_mode: 'important_score'
+  prune_mode: 'slam'
   single_thread: False
   spherical_harmonics: False
 

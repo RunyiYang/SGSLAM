@@ -283,11 +283,23 @@ class BackEnd(mp.Process):
                                 )
                             else:
                             '''
-                            # Sorting self.imp_list assuming it's a 1D tensor for simplicity, you might need to adjust if it's multidimensional
                             prune_percent = 0.2
-                            to_prune = prune_gaussians_threshold(
-                                20, imp_list
-                            )
+                            # Sorting self.imp_list assuming it's a 1D tensor for simplicity, you might need to adjust if it's multidimensional
+                            if self.record != cur_frame_idx:
+                                sorted_imp_list = torch.sort(imp_list)[0]  # Returns values and indices, we take values here
+                                quantile_80 = torch.quantile(sorted_imp_list, 0.2)  # Getting the 80th percentile value
+                                print('Value of the 80th percentile:', quantile_80)
+                                print('sorted_imp_list', sorted_imp_list)
+                                to_prune = prune_gaussians_threshold(
+                                quantile_80, imp_list)
+                            else:
+                                sorted_imp_list = torch.sort(imp_list)[0]  # Returns values and indices, we take values here
+                                quantile_80 = torch.quantile(sorted_imp_list, 0.2)  # Getting the 80th percentile value
+                                print('Value of the 80th percentile:', quantile_80)
+                                print('sorted_imp_list_else', sorted_imp_list)
+                                to_prune = prune_gaussians_threshold(
+                                    2, imp_list
+                                )
                             self.record = cur_frame_idx
                             print('to_prune size', torch.sum(to_prune).item())
                         
