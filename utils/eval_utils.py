@@ -147,7 +147,7 @@ def eval_rendering(
     kf_indices,
     iteration="final",
 ):
-    interval = 5
+    interval = 1
     img_pred, img_gt, saved_frame_idx = [], [], []
     end_idx = len(frames) - 1 if iteration == "final" or "before_opt" else iteration
     psnr_array, ssim_array, lpips_array = [], [], []
@@ -164,7 +164,7 @@ def eval_rendering(
         rendering = render(frame, gaussians, pipe, background)["render"]
         #print('img shape', rendering.shape)
         #if iteration == "after_opt":
-        #    output_path = './tum_desk_paper_images/render_rgb_rgb_baseline/' + str(idx) +'.jpg'
+        #    output_path = './tum_desk_paper_images/render_rgb_rgbd_baseline/' + str(idx) +'.jpg'
         #    save_tensor_as_image(rendering, output_path)
             
         #image = torch.clamp(rendering, 0.0, 1.0)
@@ -197,7 +197,7 @@ def eval_rendering(
     output["mean_psnr"] = float(np.mean(psnr_array))
     output["mean_ssim"] = float(np.mean(ssim_array))
     output["mean_lpips"] = float(np.mean(lpips_array))
-    print('psnr_number', psnr_array)
+    #print('psnr_number', psnr_array)
 
     Log(
         f'mean psnr: {output["mean_psnr"]}, ssim: {output["mean_ssim"]}, lpips: {output["mean_lpips"]}',

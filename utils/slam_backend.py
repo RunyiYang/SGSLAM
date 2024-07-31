@@ -246,29 +246,39 @@ class BackEnd(mp.Process):
                 if prune:
                     if len(current_window) == self.config["Training"]["window_size"]:
                         prune_mode = self.config["Training"]["prune_mode"]
-                        prune_coviz = 3
+                        prune_coviz = 8
                         self.gaussians.n_obs.fill_(0)
                         for window_idx, visibility in self.occ_aware_visibility.items():
                             self.gaussians.n_obs += visibility.cpu()
                         to_prune = None
                         if prune_mode == "odometry":
                             ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
-                            to_prune = self.gaussians.n_obs < 3
+                            to_prune = self.gaussians.n_obs < 6
                             
                             # make sure we don't split the gaussians, break here.
                         if prune_mode == "slam":
                             #ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
-                            #print('cur_frame_idx', cur_frame_idx)
+                            print('cur_frame_idx', cur_frame_idx)
                             #print('iters', iters)
                             # only prune keyframes which are relatively new
                             sorted_window = sorted(current_window, reverse=True)
-                            mask = self.gaussians.unique_kfIDs >= sorted_window[2]
+                            print('sorted_window', sorted_window)
+                            mask = self.gaussians.unique_kfIDs >= sorted_window[-1] #2
                             if not self.initialized:
+                                print('run')
                                 mask = self.gaussians.unique_kfIDs >= 0
+                            
+                            print('mask prune', torch.sum(mask).item())
+                            print('self.gaussians.n_obs <= prune_coviz', torch.sum(self.gaussians.n_obs <= prune_coviz).item())
+
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
-                            #print('to_prune size', torch.sum(to_prune).item())
+                            print('to_prune size', torch.sum(to_prune).item())
+                            print('after_prune_num', len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()))
+
+                            if len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()) < 4000:
+                                to_prune = None
                         if prune_mode == "important_score":
                             print('cur_frame_idx', cur_frame_idx)
                             print('iters', iters)
@@ -287,23 +297,23 @@ class BackEnd(mp.Process):
                             # Sorting self.imp_list assuming it's a 1D tensor for simplicity, you might need to adjust if it's multidimensional
                             if self.record != cur_frame_idx:
                                 sorted_imp_list = torch.sort(imp_list)[0]  # Returns values and indices, we take values here
-                                quantile_80 = torch.quantile(sorted_imp_list, 0.1)  # Getting the 80th percentile value
+                                quantile_80 = torch.quantile(sorted_imp_list, 0.15)  # Getting the 80th percentile value
                                 print('Value of the 80th percentile:', quantile_80)
                                 print('sorted_imp_list', sorted_imp_list)
                                 to_prune = prune_gaussians_threshold(
                                 quantile_80, imp_list)
                             else:
-                                sorted_imp_list = torch.sort(imp_list)[0]  # Returns values and indices, we take values here
-                                quantile_80 = torch.quantile(sorted_imp_list, 0.2)  # Getting the 80th percentile value
-                                print('Value of the 80th percentile:', quantile_80)
-                                print('sorted_imp_list_else', sorted_imp_list)
+                                #sorted_imp_list = torch.sort(imp_list)[0]  # Returns values and indices, we take values here
+                                #quantile_80 = torch.quantile(sorted_imp_list, 0.2)  # Getting the 80th percentile value
+                                #print('Value of the 80th percentile:', quantile_80)
+                                #print('sorted_imp_list_else', sorted_imp_list)
                                 to_prune = prune_gaussians_threshold(
-                                    2, imp_list
+                                    0, imp_list
                                 )
                             self.record = cur_frame_idx
                             print('to_prune size', torch.sum(to_prune).item())
                         
-                        if to_prune is not None:
+                        if to_prune is not None and self.monocular:
                             print('run')
                             self.gaussians.prune_points(to_prune.cuda())
                             for idx in range((len(current_window))):
