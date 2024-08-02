@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from scipy.optimize import differential_evolution
 
 from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2, getWorld2View2
-from utils.slam_utils import image_gradient, image_gradient_mask, disparity_loss, save_depth_image_with_viridis
+from utils.slam_utils import image_gradient, image_gradient_mask, disparity_loss, save_depth_image_with_viridis, calculate_scale
 
 
 class Camera(nn.Module):
@@ -89,6 +89,7 @@ class Camera(nn.Module):
             #save_depth_image_with_viridis(disparity_depth, output_path_da2_metric)
             #save_depth_image_with_viridis(depth_gt1, output_path_gt)
             #save_depth_image_with_viridis(image, output_path_gt_rgb)
+            #calculate_scale(depth_gt1, depth_da, cur_frame_idx)
             return disparity_depth
         
         depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)

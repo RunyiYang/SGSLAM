@@ -10,7 +10,7 @@ from gaussian_splatting.utils.loss_utils import l1_loss, ssim
 from utils.logging_utils import Log
 from utils.multiprocessing_utils import clone_obj
 from utils.pose_utils import update_pose
-from utils.slam_utils import get_loss_mapping, prune_list, prune_gaussians, prune_gaussians_threshold
+from utils.slam_utils import get_loss_mapping, prune_list, prune_gaussians, prune_gaussians_threshold, prune_list_global
 from icecream import ic
 import numpy as np
 
@@ -246,39 +246,23 @@ class BackEnd(mp.Process):
                 if prune:
                     if len(current_window) == self.config["Training"]["window_size"]:
                         prune_mode = self.config["Training"]["prune_mode"]
-                        prune_coviz = 8
+                        prune_coviz = 3
                         self.gaussians.n_obs.fill_(0)
                         for window_idx, visibility in self.occ_aware_visibility.items():
                             self.gaussians.n_obs += visibility.cpu()
                         to_prune = None
                         if prune_mode == "odometry":
-                            ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
-                            to_prune = self.gaussians.n_obs < 6
-                            
+                            to_prune = self.gaussians.n_obs < 3
                             # make sure we don't split the gaussians, break here.
                         if prune_mode == "slam":
-                            #ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
-                            print('cur_frame_idx', cur_frame_idx)
-                            #print('iters', iters)
                             # only prune keyframes which are relatively new
                             sorted_window = sorted(current_window, reverse=True)
-                            print('sorted_window', sorted_window)
-                            mask = self.gaussians.unique_kfIDs >= sorted_window[-1] #2
+                            mask = self.gaussians.unique_kfIDs >= sorted_window[2]
                             if not self.initialized:
-                                print('run')
                                 mask = self.gaussians.unique_kfIDs >= 0
-                            
-                            print('mask prune', torch.sum(mask).item())
-                            print('self.gaussians.n_obs <= prune_coviz', torch.sum(self.gaussians.n_obs <= prune_coviz).item())
-
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
-                            print('to_prune size', torch.sum(to_prune).item())
-                            print('after_prune_num', len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()))
-
-                            if len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()) < 4000:
-                                to_prune = None
                         if prune_mode == "important_score":
                             print('cur_frame_idx', cur_frame_idx)
                             print('iters', iters)
@@ -297,7 +281,7 @@ class BackEnd(mp.Process):
                             # Sorting self.imp_list assuming it's a 1D tensor for simplicity, you might need to adjust if it's multidimensional
                             if self.record != cur_frame_idx:
                                 sorted_imp_list = torch.sort(imp_list)[0]  # Returns values and indices, we take values here
-                                quantile_80 = torch.quantile(sorted_imp_list, 0.15)  # Getting the 80th percentile value
+                                quantile_80 = torch.quantile(sorted_imp_list, 0.2)  # Getting the 80th percentile value
                                 print('Value of the 80th percentile:', quantile_80)
                                 print('sorted_imp_list', sorted_imp_list)
                                 to_prune = prune_gaussians_threshold(
@@ -377,8 +361,15 @@ class BackEnd(mp.Process):
         Log("Starting color refinement")
 
         iteration_total = 26000
+        #prune_iterations = [16000, 24000]
+        prune_iterations = [13000]
+        prune_percent = 0.2
+        prune_decay = 0.8
         for iteration in tqdm(range(1, iteration_total + 1)):
+            gaussian_list, imp_list = torch.zeros(len(self.gaussians.get_xyz)).cuda(), torch.zeros(len(self.gaussians.get_xyz)).cuda()
             viewpoint_idx_stack = list(self.viewpoints.keys())
+            #print('viewpoint_idx_stack', viewpoint_idx_stack)
+            #print('self.viewpoints', self.viewpoints)
             viewpoint_cam_idx = viewpoint_idx_stack.pop(
                 random.randint(0, len(viewpoint_idx_stack) - 1)
             )
@@ -386,6 +377,35 @@ class BackEnd(mp.Process):
             render_pkg = render(
                 viewpoint_cam, self.gaussians, self.pipeline_params, self.background
             )
+            gaussians_count, important_score = (
+                render_pkg["gaussians_count"].detach(),
+                render_pkg["important_score"].detach(),
+            )
+            gaussian_list += gaussians_count
+            imp_list += important_score
+            if self.config["Training"]["global_prune"]:
+                if iteration in prune_iterations:
+                    ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
+                    i = prune_iterations.index(iteration)
+                    prune_mode = self.config["Training"]["prune_mode"]
+                    if prune_mode == "important_score":
+                        time1 = time.time()
+                        to_prune, mask = prune_gaussians(
+                        (prune_decay**i) * prune_percent, imp_list)
+                        print((prune_decay**i) * prune_percent)
+                        print('to_prune size', torch.sum(to_prune).item())
+
+                    if to_prune is not None:
+                        self.gaussians.prune_points(to_prune.cuda())
+                        mask = to_prune.cuda()
+                        valid_points_mask = ~mask
+                        imp_list = imp_list[valid_points_mask]
+                    ic("After prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))        
+
+                    render_pkg = render(
+                        viewpoint_cam, self.gaussians, self.pipeline_params, self.background
+                    )
+
             image, visibility_filter, radii = (
                 render_pkg["render"],
                 render_pkg["visibility_filter"],
