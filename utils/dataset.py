@@ -122,6 +122,50 @@ class TUMParser:
             self.frames.append(frame)
 
 
+class ScannetParser:
+    def __init__(self, input_folder):
+        self.input_folder = input_folder
+        self.color_paths = (glob.glob(f"{self.input_folder}/color/*.jpg"))
+        # rename with zfill
+        self.color_paths = sorted(self.color_paths, key=lambda x: int(x.split("/")[-1].split(".")[0]))
+        self.depth_paths = (glob.glob(f"{self.input_folder}/depth/*.png"))
+        # rename with zfill
+        self.depth_paths = sorted(self.depth_paths, key=lambda x: int(x.split("/")[-1].split(".")[0]))
+        # print("color_paths", self.color_paths[:20])
+        # print("depth_paths", self.depth_paths[:20])
+        self.n_img = len(self.color_paths)
+        self.load_poses(os.path.join(self.input_folder, "pose"))
+
+
+    def load_poses(self, path):
+        self.poses = []
+        pose_paths = sorted(glob.glob(os.path.join(path, '*.txt')),
+                            key=lambda x: int(os.path.basename(x)[:-4]))
+        # print("pose_paths", pose_paths)
+        for pose_path in pose_paths:
+            with open(pose_path, "r") as f:
+                lines = f.readlines()
+            ls = []
+            for line in lines:
+                l = list(map(float, line.split(' ')))
+                ls.append(l)
+            c2w = np.array(ls).reshape(4, 4)
+            self.poses.append(c2w)
+
+
+        frames = []
+        for i in range(self.n_img):
+
+            frame = {
+                "file_path": self.color_paths[i],
+                "depth_path": self.depth_paths[i],
+                "transform_matrix": self.poses[i].tolist(),
+            }
+
+            frames.append(frame)
+        self.frames = frames
+        
+
 class EuRoCParser:
     def __init__(self, input_folder, start_idx=0):
         self.input_folder = input_folder
@@ -261,6 +305,10 @@ class MonocularDataset(BaseDataset):
         image = np.array(Image.open(color_path))
         depth = None
 
+        H_read, W_read = image.shape[:2]
+        if H_read != self.height or W_read != self.width:
+            image =  cv2.resize(image, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+
         if self.disorted:
             image = cv2.remap(image, self.map1x, self.map1y, cv2.INTER_LINEAR)
 
@@ -276,6 +324,13 @@ class MonocularDataset(BaseDataset):
         )
         pose = torch.from_numpy(pose).to(device=self.device)
         raw_image = cv2.imread(color_path)
+        H_read, W_read = raw_image.shape[:2]
+        if H_read != self.height or W_read != self.width:
+            raw_image =  cv2.resize(raw_image, (self.width, self.height), interpolation=cv2.INTER_LINEAR)
+
+
+        # print("image", image.shape, 'raw_image', raw_image.shape)
+        # print("depth", depth.shape)
         return image, depth, pose, raw_image
 
 
@@ -519,6 +574,16 @@ class RealsenseDataset(BaseDataset):
 
         return image, depth, pose
 
+class ScannetDataset(MonocularDataset):
+    def __init__(self, args, path, config):
+        super().__init__(args, path, config)
+        dataset_path = config["Dataset"]["dataset_path"]
+        parser = ScannetParser(dataset_path)
+        self.num_imgs = parser.n_img
+        self.color_paths = parser.color_paths
+        self.depth_paths = parser.depth_paths
+        self.poses = parser.poses
+
 
 def load_dataset(args, path, config):
     if config["Dataset"]["type"] == "tum":
@@ -529,5 +594,7 @@ def load_dataset(args, path, config):
         return EurocDataset(args, path, config)
     elif config["Dataset"]["type"] == "realsense":
         return RealsenseDataset(args, path, config)
+    elif config["Dataset"]["type"] == "scannet":
+        return ScannetDataset(args, path, config)
     else:
         raise ValueError("Unknown dataset type")

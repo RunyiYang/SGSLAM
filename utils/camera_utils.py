@@ -72,6 +72,7 @@ class Camera(nn.Module):
     @staticmethod
     def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, c_dispairty, c_absolute, config, render_pkg_input):
         gt_color, gt_depth, gt_pose, raw_image = dataset[idx]
+        # print(f'gt_color: {gt_color.shape}, gt_depth: {gt_depth.shape}, gt_pose: {gt_pose.shape}, raw_image: {raw_image.shape}')
         #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
         def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input, c_dispairty, c_absolute):
             depth_render = depth_gt1

@@ -117,10 +117,13 @@ def get_loss_mapping_rgbd(config, image, depth, viewpoint, initialization=False)
     rgb_boundary_threshold = config["Training"]["rgb_boundary_threshold"]
 
     gt_image = viewpoint.original_image.cuda()
+    # print("gt_image", gt_image.shape)
+
 
     gt_depth = torch.from_numpy(viewpoint.depth).to(
         dtype=torch.float32, device=image.device
     )[None]
+    # print("gt_depth", gt_depth.shape)
     rgb_pixel_mask = (gt_image.sum(dim=0) > rgb_boundary_threshold).view(*depth.shape)
     depth_pixel_mask = (gt_depth > 0.01).view(*depth.shape)
 
