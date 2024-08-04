@@ -14,3 +14,9 @@ datasets
 wandb
 
 result*
+checkpoints/
+sbatch_logs/
+sbatch_error_metric_loss_no_scale_replica/
+sbatch_log_metric_loss_no_scale_replica/
+
+sbatch_log/
