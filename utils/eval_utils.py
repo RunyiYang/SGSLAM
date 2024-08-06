@@ -163,9 +163,9 @@ def eval_rendering(
         
         rendering = render(frame, gaussians, pipe, background)["render"]
         #print('img shape', rendering.shape)
-        #if iteration == "after_opt":
-        #    output_path = './tum_desk_paper_images/render_rgb_rgbd_baseline/' + str(idx) +'.jpg'
-        #    save_tensor_as_image(rendering, output_path)
+        if iteration == "after_opt":
+            output_path = './tum_desk_paper_images/render_rgb_rgbd/' + str(idx) +'.jpg'
+            save_tensor_as_image(rendering, output_path)
             
         #image = torch.clamp(rendering, 0.0, 1.0)
         #print('idx', idx)

@@ -81,15 +81,15 @@ class Camera(nn.Module):
             
             with torch.no_grad():
                 depth_da = depth_anything.infer_image(image) # HxW depth map in meters in numpy
-            time2 = time.time()
             disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_da)
-            output_path_da2_metric = './tum_desk_paper_images/da2_metric/' + str(idx) +'.png'
-            output_path_gt = './tum_desk_paper_images/gt_depth/' + str(idx) +'.png'
-            output_path_render = './tum_desk_paper_images/render_depth/' + str(idx) +'.png'
+            ##output_path_da2_metric = './tum_desk_paper_images/da2_metric/' + str(idx) +'.png'
+            #output_path_gt = './tum_desk_paper_images/gt_depth/' + str(idx) +'.png'
+            #output_path_render = './tum_desk_paper_images/render_depth/' + str(idx) +'.png'
             #output_path_gt_rgb = './tum_desk_paper_images/gt_rgb/' + str(idx) +'.png'
             #save_depth_image_with_viridis(disparity_depth, output_path_da2_metric)
             #save_depth_image_with_viridis(depth_gt1, output_path_gt)
-            #save_depth_image_with_viridis(image, output_path_gt_rgb)
+            #cv2.imwrite(output_path_gt_rgb, raw_image)
+            #save_depth_image_with_viridis(depth_render, output_path_render)
             #calculate_scale(depth_gt1, depth_da, cur_frame_idx)
             return disparity_depth
         

@@ -362,9 +362,10 @@ class BackEnd(mp.Process):
 
         iteration_total = 26000
         #prune_iterations = [16000, 24000]
-        prune_iterations = [13000]
-        prune_percent = 0.2
+        prune_iterations = [16000]
+        prune_percent = 0.5
         prune_decay = 0.8
+        to_prune = None
         for iteration in tqdm(range(1, iteration_total + 1)):
             gaussian_list, imp_list = torch.zeros(len(self.gaussians.get_xyz)).cuda(), torch.zeros(len(self.gaussians.get_xyz)).cuda()
             viewpoint_idx_stack = list(self.viewpoints.keys())
@@ -387,13 +388,10 @@ class BackEnd(mp.Process):
                 if iteration in prune_iterations:
                     ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
                     i = prune_iterations.index(iteration)
-                    prune_mode = self.config["Training"]["prune_mode"]
-                    if prune_mode == "important_score":
-                        time1 = time.time()
-                        to_prune, mask = prune_gaussians(
-                        (prune_decay**i) * prune_percent, imp_list)
-                        print((prune_decay**i) * prune_percent)
-                        print('to_prune size', torch.sum(to_prune).item())
+                    to_prune, mask = prune_gaussians(
+                    (prune_decay**i) * prune_percent, imp_list)
+                    print((prune_decay**i) * prune_percent)
+                    print('to_prune size', torch.sum(to_prune).item())
 
                     if to_prune is not None:
                         self.gaussians.prune_points(to_prune.cuda())
