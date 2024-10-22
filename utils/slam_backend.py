@@ -244,7 +244,7 @@ class BackEnd(mp.Process):
                 if prune:
                     if len(current_window) == self.config["Training"]["window_size"]:
                         prune_mode = self.config["Training"]["prune_mode"]
-                        prune_coviz = 8
+                        prune_coviz = 3
                         self.gaussians.n_obs.fill_(0)
                         for window_idx, visibility in self.occ_aware_visibility.items():
                             self.gaussians.n_obs += visibility.cpu()
@@ -258,7 +258,7 @@ class BackEnd(mp.Process):
                             #print('iters', iters)
                             # only prune keyframes which are relatively new
                             sorted_window = sorted(current_window, reverse=True)
-                            print('sorted_window', sorted_window)
+                            # print('sorted_window', sorted_window)
                             mask = self.gaussians.unique_kfIDs >= sorted_window[-1] #2
                             if not self.initialized:
                                 mask = self.gaussians.unique_kfIDs >= 0

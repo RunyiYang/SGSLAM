@@ -275,6 +275,7 @@ if __name__ == "__main__":
         with open(os.path.join(save_dir, "config.yml"), "w") as file:
             documents = yaml.dump(config, file)
         Log("saving results in " + save_dir)
+        print("saving results in " + save_dir)
         run = wandb.init(
             project="MonoGS",
             name=f"{tmp}_{current_datetime}",

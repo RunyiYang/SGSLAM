@@ -1,11 +1,11 @@
 Results:
-  save_results: False
+  save_results: True
   save_dir: "results"
   save_trj: True
   save_trj_kf_intv: 20
   use_gui: False
   eval_rendering: False
-  use_wandb: False
+  use_wandb: True
 
 Dataset:
   sensor_type: 'monocular'
@@ -51,7 +51,7 @@ Training:
   rgb_boundary_threshold: 0.01
   kf_translation: 0.04
   kf_min_translation: 0.02
-  use_depth_loss: True
+  use_depth_loss: False
   use_mono_trick: True
   kf_overlap: 0.95
   prune_mode: 'slam'
