@@ -237,6 +237,7 @@ if __name__ == "__main__":
     # Set up command line argument parser
     parser = ArgumentParser(description="Training script parameters")
     parser.add_argument("--config", type=str)
+    parser.add_argument("--save_dir", type=str)
     parser.add_argument("--eval", action="store_true")
 
     args = parser.parse_args(sys.argv[1:])
@@ -266,7 +267,7 @@ if __name__ == "__main__":
         current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         path = config["Dataset"]["dataset_path"].split("/")
         save_dir = os.path.join(
-            config["Results"]["save_dir"], path[-3] + "_" + path[-2], current_datetime
+            config["Results"]["save_dir"], path[-3] + "_" + path[-2], current_datetime if not args.save_dir else args.save_dir
         )
         tmp = args.config
         tmp = tmp.split(".")[0]

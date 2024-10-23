@@ -1,0 +1,11 @@
+name: MonoGS
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - cudatoolkit=11.6
+  - plyfile=0.8.1
+  - python=3.7.13
+  - pip=22.3.1
+  - tqdm
