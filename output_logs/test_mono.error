@@ -1,164 +1,178 @@
 --shell: 1 required TEXT:{bash,cmd.exe,dash,fish,nu,posix,powershell,tcsh,xonsh,zsh} missing
 Run with --help for more information.
---shell: 1 required TEXT:{bash,cmd.exe,dash,fish,nu,posix,powershell,tcsh,xonsh,zsh} missing
-Run with --help for more information.
-xFormers not available
-xFormers not available
-xFormers not available
-xFormers not available
-wandb: Using wandb-core as the SDK backend. Please refer to https://wandb.me/wandb-core for more information.
-wandb: Using wandb-core as the SDK backend. Please refer to https://wandb.me/wandb-core for more information.
-wandb: Currently logged in as: ranny-ry-yang. Use `wandb login --relogin` to force relogin
-wandb: Currently logged in as: ranny-ry-yang. Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.18.5
-wandb: Run data is saved locally in /home/runyi_yang/project/SGSLAM/wandb/run-20241023_054959-23b4jak0
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run configs/mono/replica/room2_2024-10-23-05-49-59
-wandb: ⭐️ View project at https://wandb.ai/ranny-ry-yang/MonoGS
-wandb: 🚀 View run at https://wandb.ai/ranny-ry-yang/MonoGS/runs/23b4jak0
-wandb: Tracking run with wandb version 0.18.5
-wandb: Run data is saved locally in /home/runyi_yang/project/SGSLAM/wandb/run-20241023_054959-a8efbd8h
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run configs/mono/replica/room1_2024-10-23-05-49-59
-wandb: ⭐️ View project at https://wandb.ai/ranny-ry-yang/MonoGS
-wandb: 🚀 View run at https://wandb.ai/ranny-ry-yang/MonoGS/runs/a8efbd8h
-xFormers not available
-xFormers not available
-xFormers not available
-xFormers not available
-[W CudaIPCTypes.cpp:95] Producer process tried to deallocate over 1000 memory blocks referred by consumer processes. Deallocation might be significantly slowed down. We assume it will never going to be the case, but if it is, please file but to https://github.com/pytorch/pytorch
-[W CudaIPCTypes.cpp:95] Producer process tried to deallocate over 1000 memory blocks referred by consumer processes. Deallocation might be significantly slowed down. We assume it will never going to be the case, but if it is, please file but to https://github.com/pytorch/pytorch
-[W CudaIPCTypes.cpp:15] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-[W CUDAGuardImpl.h:46] Warning: CUDA warning: driver shutting down (function uncheckedGetDevice)
-[W CUDAGuardImpl.h:62] Warning: CUDA warning: invalid device ordinal (function uncheckedSetDevice)
-wandb:                                                                                
-wandb: 
-wandb: Run history:
-wandb:       ate ▁▁▃▄▄▅▅▆▆▆▇▇███
-wandb: frame_idx ▁▁▂▂▃▃▄▄▅▅▆▇▇██
-wandb: 
-wandb: Run summary:
-wandb:       ate 0.75356
-wandb: frame_idx 1997
-wandb: 
-wandb: 🚀 View run configs/mono/replica/room1_2024-10-23-05-49-59 at: https://wandb.ai/ranny-ry-yang/MonoGS/runs/a8efbd8h
-wandb: ⭐️ View project at: https://wandb.ai/ranny-ry-yang/MonoGS
-wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
-wandb: Find logs at: ./wandb/run-20241023_054959-a8efbd8h/logs
-[W CudaIPCTypes.cpp:15] Producer process has been terminated before all shared CUDA tensors released. See Note [Sharing CUDA tensors]
-srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
-slurmstepd: error: *** JOB 96279 ON hala CANCELLED AT 2024-10-23T07:58:49 DUE TO TIME LIMIT ***
-slurmstepd: error: *** STEP 96279.0 ON hala CANCELLED AT 2024-10-23T07:58:49 DUE TO TIME LIMIT ***
-srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
-slurmstepd: error: *** JOB 96281 ON hala CANCELLED AT 2024-10-23T09:50:19 DUE TO TIME LIMIT ***
-slurmstepd: error: *** STEP 96281.0 ON hala CANCELLED AT 2024-10-23T09:50:19 DUE TO TIME LIMIT ***
+/var/lib/slurm/slurmd/job97238/slurm_script: line 18: mircomamba: command not found
+critical libmamba Cannot activate, prefix does not exist at: '/scratch/runyi_yang/micromamba/envs/MonoGS'
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    If you wish to install a non-Debian packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    See /usr/share/doc/python3.12/README.venv for more information.
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    If you wish to install a non-Debian packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    See /usr/share/doc/python3.12/README.venv for more information.
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+info     libmamba ****************** Backtrace Start ******************
+debug    libmamba Loading configuration
+trace    libmamba Compute configurable 'create_base'
+trace    libmamba Compute configurable 'no_env'
+trace    libmamba Compute configurable 'no_rc'
+trace    libmamba Compute configurable 'rc_files'
+trace    libmamba Compute configurable 'root_prefix'
+trace    libmamba Get RC files configuration from locations up to HomeDir
+trace    libmamba Configuration not found at '/home/runyi_yang/.mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/.mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/.mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.conda/.condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/.condarc'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.mambarc'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc.d'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.condarc'
+trace    libmamba Configuration not found at '/var/lib/conda/.mambarc'
+trace    libmamba Configuration not found at '/var/lib/conda/condarc.d/'
+trace    libmamba Configuration not found at '/var/lib/conda/condarc'
+trace    libmamba Configuration not found at '/var/lib/conda/.condarc'
+trace    libmamba Configuration not found at '/etc/conda/.mambarc'
+trace    libmamba Configuration not found at '/etc/conda/condarc.d/'
+trace    libmamba Configuration not found at '/etc/conda/condarc'
+trace    libmamba Configuration not found at '/etc/conda/.condarc'
+trace    libmamba Update configurable 'no_env'
+trace    libmamba Compute configurable 'envs_dirs'
+trace    libmamba Compute configurable 'file_specs'
+trace    libmamba Compute configurable 'spec_file_env_name'
+trace    libmamba Compute configurable 'env_name'
+trace    libmamba Compute configurable 'use_target_prefix_fallback'
+trace    libmamba Compute configurable 'target_prefix'
+trace    libmamba Get RC files configuration from locations up to TargetPrefix
+trace    libmamba Configuration not found at '/home/runyi_yang/.mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/.mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/.mambarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.conda/.condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc.d'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc'
+trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/.condarc'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.mambarc'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc.d'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc'
+trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.condarc'
+trace    libmamba Configuration not found at '/var/lib/conda/.mambarc'
+trace    libmamba Configuration not found at '/var/lib/conda/condarc.d/'
+trace    libmamba Configuration not found at '/var/lib/conda/condarc'
+trace    libmamba Configuration not found at '/var/lib/conda/.condarc'
+trace    libmamba Configuration not found at '/etc/conda/.mambarc'
+trace    libmamba Configuration not found at '/etc/conda/condarc.d/'
+trace    libmamba Configuration not found at '/etc/conda/condarc'
+trace    libmamba Configuration not found at '/etc/conda/.condarc'
+trace    libmamba Update configurable 'no_env'
+trace    libmamba Compute configurable 'relocate_prefix'
+trace    libmamba Compute configurable 'target_prefix_checks'
+error    libmamba No target prefix specified
+critical libmamba Aborting.
+info     libmamba ****************** Backtrace End ********************
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    If you wish to install a non-Debian packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    See /usr/share/doc/python3.12/README.venv for more information.
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    If you wish to install a non-Debian packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    See /usr/share/doc/python3.12/README.venv for more information.
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+    If you wish to install a non-Debian-packaged Python package,
+    create a virtual environment using python3 -m venv path/to/venv.
+    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+    sure you have python3-full installed.
+    
+    If you wish to install a non-Debian packaged Python application,
+    it may be easiest to use pipx install xyz, which will manage a
+    virtual environment for you. Make sure you have pipx installed.
+    
+    See /usr/share/doc/python3.12/README.venv for more information.
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
