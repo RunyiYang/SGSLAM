@@ -21,7 +21,7 @@ micromamba activate MonoGS
 pip install --upgrade pip
 
 pip install torch==1.13.0+cu116 torchvision==0.14.0+cu116 torchaudio==0.13.0 --extra-index-url https://download.pytorch.org/whl/cu116
-micromamba install nvidia/label/cuda-11.6.1::cuda-toolkit
-pip install -r requirements.txt
+micromamba install nvidia/label/cuda-11.6.1::cuda-toolkit -y
+pip install -r requirement.txt
 TORCH_CUDA_ARCH_LIST="6.0+PTX" pip install -e ./submodules/simple-knn
 TORCH_CUDA_ARCH_LIST="6.0+PTX" pip install -e ./submodules/diff-gaussian-rasterization
