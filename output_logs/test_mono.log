@@ -1,0 +1,584 @@
+
+
+Transaction
+
+  Prefix: /scratch/runyi_yang/micromamba/envs/MonoGS
+
+  Updating specs:
+
+   - cudatoolkit=11.6
+   - plyfile=0.8.1
+   - python=3.7.13
+   - pip=22.3.1
+   - tqdm
+
+
+  Package               Version  Build                Channel          Size
+─────────────────────────────────────────────────────────────────────────────
+  Install:
+─────────────────────────────────────────────────────────────────────────────
+
+  + _libgcc_mutex           0.1  conda_forge          conda-forge       3kB
+  + _openmp_mutex           4.5  2_gnu                conda-forge      24kB
+  + ca-certificates   2024.8.30  hbcca054_0           conda-forge     159kB
+  + colorama              0.4.6  pyhd8ed1ab_0         conda-forge      25kB
+  + cudatoolkit          11.6.2  hfc3e2af_13          conda-forge     628MB
+  + ld_impl_linux-64       2.43  h712a8e2_2           conda-forge     669kB
+  + libblas               3.9.0  25_linux64_openblas  conda-forge      16kB
+  + libcblas              3.9.0  25_linux64_openblas  conda-forge      16kB
+  + libffi                  3.3  h58526e2_2           conda-forge      53kB
+  + libgcc               14.2.0  h77fa898_1           conda-forge     849kB
+  + libgcc-ng            14.2.0  h69a702a_1           conda-forge      54kB
+  + libgfortran          14.2.0  h69a702a_1           conda-forge      54kB
+  + libgfortran-ng       14.2.0  h69a702a_1           conda-forge      54kB
+  + libgfortran5         14.2.0  hd5240d6_1           conda-forge       1MB
+  + libgomp              14.2.0  h77fa898_1           conda-forge     461kB
+  + liblapack             3.9.0  25_linux64_openblas  conda-forge      16kB
+  + libopenblas          0.3.28  pthreads_h94d23a6_0  conda-forge       6MB
+  + libsqlite            3.46.0  hde9e2c9_0           conda-forge     865kB
+  + libstdcxx            14.2.0  hc0a3c3a_1           conda-forge       4MB
+  + libstdcxx-ng         14.2.0  h4852527_1           conda-forge      54kB
+  + libzlib              1.2.13  h4ab18f5_6           conda-forge      62kB
+  + ncurses                 6.5  he02047a_1           conda-forge     889kB
+  + numpy                1.21.6  py37h976b520_0       conda-forge       6MB
+  + openssl              1.1.1w  hd590300_0           conda-forge       2MB
+  + pip                  22.3.1  pyhd8ed1ab_0         conda-forge       2MB
+  + plyfile               0.8.1  pyhd8ed1ab_0         conda-forge      32kB
+  + python               3.7.13  haa1d7c7_1           pkgs/main        43MB
+  + python_abi              3.7  2_cp37m              conda-forge       4kB
+  + readline                8.2  h8228510_1           conda-forge     281kB
+  + setuptools           69.0.3  pyhd8ed1ab_0         conda-forge     471kB
+  + sqlite               3.46.0  h6d4b2fc_0           conda-forge     860kB
+  + tk                   8.6.13  noxft_h4845f30_101   conda-forge       3MB
+  + tqdm                 4.66.5  pyhd8ed1ab_0         conda-forge      90kB
+  + wheel                0.42.0  pyhd8ed1ab_0         conda-forge      58kB
+  + xz                    5.2.6  h166bdaf_0           conda-forge     418kB
+  + zlib                 1.2.13  h4ab18f5_6           conda-forge      93kB
+
+  Summary:
+
+  Install: 36 packages
+
+  Total download: 701MB
+
+─────────────────────────────────────────────────────────────────────────────
+
+
+
+Transaction starting
+Linking ld_impl_linux-64-2.43-h712a8e2_2
+Linking _libgcc_mutex-0.1-conda_forge
+Linking ca-certificates-2024.8.30-hbcca054_0
+Linking libgomp-14.2.0-h77fa898_1
+Linking _openmp_mutex-4.5-2_gnu
+Linking libgcc-14.2.0-h77fa898_1
+Linking libgfortran5-14.2.0-hd5240d6_1
+Linking libstdcxx-14.2.0-hc0a3c3a_1
+Linking libgcc-ng-14.2.0-h69a702a_1
+Linking libgfortran-14.2.0-h69a702a_1
+Linking libstdcxx-ng-14.2.0-h4852527_1
+Linking xz-5.2.6-h166bdaf_0
+Linking libzlib-1.2.13-h4ab18f5_6
+Linking openssl-1.1.1w-hd590300_0
+Linking ncurses-6.5-he02047a_1
+Linking libgfortran-ng-14.2.0-h69a702a_1
+Linking libffi-3.3-h58526e2_2
+Linking cudatoolkit-11.6.2-hfc3e2af_13
+By downloading and using the CUDA Toolkit conda packages, you accept the terms and conditions of the CUDA End User License Agreement (EULA): https://docs.nvidia.com/cuda/eula/index.html
+
+Linking zlib-1.2.13-h4ab18f5_6
+Linking tk-8.6.13-noxft_h4845f30_101
+Linking libsqlite-3.46.0-hde9e2c9_0
+Linking readline-8.2-h8228510_1
+Linking libopenblas-0.3.28-pthreads_h94d23a6_0
+Linking sqlite-3.46.0-h6d4b2fc_0
+Linking libblas-3.9.0-25_linux64_openblas
+Linking libcblas-3.9.0-25_linux64_openblas
+Linking liblapack-3.9.0-25_linux64_openblas
+Linking python-3.7.13-haa1d7c7_1
+Linking wheel-0.42.0-pyhd8ed1ab_0
+Linking setuptools-69.0.3-pyhd8ed1ab_0
+Linking pip-22.3.1-pyhd8ed1ab_0
+Linking colorama-0.4.6-pyhd8ed1ab_0
+Linking tqdm-4.66.5-pyhd8ed1ab_0
+Linking python_abi-3.7-2_cp37m
+Linking numpy-1.21.6-py37h976b520_0
+Linking plyfile-0.8.1-pyhd8ed1ab_0
+
+Transaction finished
+
+To activate this environment, use:
+
+    micromamba activate MonoGS
+
+Or to execute a single command in this environment, use:
+
+    micromamba run -n MonoGS mycommand
+
+Requirement already satisfied: pip in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (22.3.1)
+Collecting pip
+  Using cached pip-24.0-py3-none-any.whl (2.1 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 22.3.1
+    Uninstalling pip-22.3.1:
+      Successfully uninstalled pip-22.3.1
+Successfully installed pip-24.0
+Looking in indexes: https://pypi.org/simple, https://download.pytorch.org/whl/cu116
+Collecting torch==1.13.0+cu116
+  Using cached https://download.pytorch.org/whl/cu116/torch-1.13.0%2Bcu116-cp37-cp37m-linux_x86_64.whl (1983.0 MB)
+Collecting torchvision==0.14.0+cu116
+  Using cached https://download.pytorch.org/whl/cu116/torchvision-0.14.0%2Bcu116-cp37-cp37m-linux_x86_64.whl (24.2 MB)
+Collecting torchaudio==0.13.0
+  Using cached https://download.pytorch.org/whl/cu116/torchaudio-0.13.0%2Bcu116-cp37-cp37m-linux_x86_64.whl (4.2 MB)
+Collecting typing-extensions (from torch==1.13.0+cu116)
+  Using cached https://download.pytorch.org/whl/typing_extensions-4.9.0-py3-none-any.whl (32 kB)
+Requirement already satisfied: numpy in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from torchvision==0.14.0+cu116) (1.21.6)
+Collecting requests (from torchvision==0.14.0+cu116)
+  Using cached requests-2.31.0-py3-none-any.whl.metadata (4.6 kB)
+Collecting pillow!=8.3.*,>=5.3.0 (from torchvision==0.14.0+cu116)
+  Using cached Pillow-9.5.0-cp37-cp37m-manylinux_2_28_x86_64.whl.metadata (9.5 kB)
+Collecting charset-normalizer<4,>=2 (from requests->torchvision==0.14.0+cu116)
+  Using cached charset_normalizer-3.4.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (34 kB)
+Collecting idna<4,>=2.5 (from requests->torchvision==0.14.0+cu116)
+  Using cached idna-3.10-py3-none-any.whl.metadata (10 kB)
+Collecting urllib3<3,>=1.21.1 (from requests->torchvision==0.14.0+cu116)
+  Using cached urllib3-2.0.7-py3-none-any.whl.metadata (6.6 kB)
+Collecting certifi>=2017.4.17 (from requests->torchvision==0.14.0+cu116)
+  Using cached certifi-2024.8.30-py3-none-any.whl.metadata (2.2 kB)
+INFO: pip is looking at multiple versions of typing-extensions to determine which version is compatible with other requirements. This could take a while.
+Collecting typing-extensions (from torch==1.13.0+cu116)
+  Using cached https://download.pytorch.org/whl/typing_extensions-4.8.0-py3-none-any.whl (31 kB)
+  Using cached typing_extensions-4.7.1-py3-none-any.whl.metadata (3.1 kB)
+Using cached Pillow-9.5.0-cp37-cp37m-manylinux_2_28_x86_64.whl (3.4 MB)
+Using cached requests-2.31.0-py3-none-any.whl (62 kB)
+Using cached typing_extensions-4.7.1-py3-none-any.whl (33 kB)
+Using cached certifi-2024.8.30-py3-none-any.whl (167 kB)
+Using cached charset_normalizer-3.4.0-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (138 kB)
+Using cached idna-3.10-py3-none-any.whl (70 kB)
+Using cached urllib3-2.0.7-py3-none-any.whl (124 kB)
+Installing collected packages: urllib3, typing-extensions, pillow, idna, charset-normalizer, certifi, torch, requests, torchvision, torchaudio
+Successfully installed certifi-2024.8.30 charset-normalizer-3.4.0 idna-3.10 pillow-9.5.0 requests-2.31.0 torch-1.13.0+cu116 torchaudio-0.13.0+cu116 torchvision-0.14.0+cu116 typing-extensions-4.7.1 urllib3-2.0.7
+conda-forge/linux-64                                        Using cache
+conda-forge/noarch                                          Using cache
+
+Pinned packages:
+
+  - python=3.7
+
+
+Transaction
+
+  Prefix: /scratch/runyi_yang/micromamba/envs/MonoGS
+
+  Updating specs:
+
+   - nvidia/label/cuda-11.6.1::cuda-toolkit
+
+
+  Package                       Version  Build       Channel                       Size
+─────────────────────────────────────────────────────────────────────────────────────────
+  Install:
+─────────────────────────────────────────────────────────────────────────────────────────
+
+  + cuda-cccl                   11.6.55  hf6102b2_0  nvidia/label/cuda-11.6.1       1MB
+  + cuda-command-line-tools      11.6.1  0           nvidia/label/cuda-11.6.1       1kB
+  + cuda-compiler                11.6.1  0           nvidia/label/cuda-11.6.1       1kB
+  + cuda-cudart                 11.6.55  he381448_0  nvidia/label/cuda-11.6.1     198kB
+  + cuda-cudart-dev             11.6.55  h42ad0f4_0  nvidia/label/cuda-11.6.1       1MB
+  + cuda-cuobjdump             11.6.112  h411b612_0  nvidia/label/cuda-11.6.1     122kB
+  + cuda-cupti                 11.6.112  h2b04436_0  nvidia/label/cuda-11.6.1      23MB
+  + cuda-cuxxfilt              11.6.112  h568fa92_0  nvidia/label/cuda-11.6.1     275kB
+  + cuda-driver-dev             11.6.55  0           nvidia/label/cuda-11.6.1      17kB
+  + cuda-gdb                   11.6.112  h0547acf_0  nvidia/label/cuda-11.6.1       5MB
+  + cuda-libraries               11.6.1  0           nvidia/label/cuda-11.6.1       2kB
+  + cuda-libraries-dev           11.6.1  0           nvidia/label/cuda-11.6.1       2kB
+  + cuda-memcheck              11.6.112  h2d95318_0  nvidia/label/cuda-11.6.1     157kB
+  + cuda-nsight                11.6.112  0           nvidia/label/cuda-11.6.1     119MB
+  + cuda-nsight-compute          11.6.1  0           nvidia/label/cuda-11.6.1       1kB
+  + cuda-nvcc                  11.6.112  hf7fc535_0  nvidia/label/cuda-11.6.1      44MB
+  + cuda-nvdisasm              11.6.104  he451785_0  nvidia/label/cuda-11.6.1      33MB
+  + cuda-nvml-dev               11.6.55  haa9ef22_0  nvidia/label/cuda-11.6.1      67kB
+  + cuda-nvprof                11.6.112  h7234bcb_0  nvidia/label/cuda-11.6.1       5MB
+  + cuda-nvprune               11.6.112  h9eb4445_0  nvidia/label/cuda-11.6.1      51kB
+  + cuda-nvrtc                 11.6.112  h6a5ffed_0  nvidia/label/cuda-11.6.1      18MB
+  + cuda-nvrtc-dev             11.6.112  h184e709_0  nvidia/label/cuda-11.6.1     110MB
+  + cuda-nvtx                  11.6.112  ha784fc9_0  nvidia/label/cuda-11.6.1      45kB
+  + cuda-nvvp                  11.6.112  h833d014_0  nvidia/label/cuda-11.6.1     120MB
+  + cuda-samples               11.6.101  h8efea70_0  nvidia/label/cuda-11.6.1       5kB
+  + cuda-sanitizer-api         11.6.112  h31401fe_0  nvidia/label/cuda-11.6.1      17MB
+  + cuda-toolkit                 11.6.1  0           nvidia/label/cuda-11.6.1       1kB
+  + cuda-tools                   11.6.1  0           nvidia/label/cuda-11.6.1       1kB
+  + cuda-visual-tools            11.6.1  0           nvidia/label/cuda-11.6.1       1kB
+  + gds-tools                   1.2.1.4  0           nvidia/label/cuda-11.6.1      42MB
+  + libcublas                 11.8.1.74  h1e58c10_0  nvidia/label/cuda-11.6.1     310MB
+  + libcublas-dev             11.8.1.74  h7a51e1f_0  nvidia/label/cuda-11.6.1     321MB
+  + libcufft                 10.7.1.112  hf425ae0_0  nvidia/label/cuda-11.6.1      98MB
+  + libcufft-dev             10.7.1.112  ha5ce4c0_0  nvidia/label/cuda-11.6.1     207MB
+  + libcufile                   1.2.1.4  0           nvidia/label/cuda-11.6.1     550kB
+  + libcufile-dev               1.2.1.4  0           nvidia/label/cuda-11.6.1      13MB
+  + libcurand                 10.2.9.55  h7c349da_0  nvidia/label/cuda-11.6.1      53MB
+  + libcurand-dev             10.2.9.55  hd2e71f0_0  nvidia/label/cuda-11.6.1      53MB
+  + libcusolver              11.3.3.112  hc34d849_0  nvidia/label/cuda-11.6.1      91MB
+  + libcusparse              11.7.2.112  hc8dcb0d_0  nvidia/label/cuda-11.6.1     169MB
+  + libcusparse-dev          11.7.2.112  hc2e3d5c_0  nvidia/label/cuda-11.6.1     345MB
+  + libnpp                   11.6.2.112  h1b7d7c6_0  nvidia/label/cuda-11.6.1     124MB
+  + libnpp-dev               11.6.2.112  h8488edb_0  nvidia/label/cuda-11.6.1     121MB
+  + libnvjpeg                11.6.1.112  h9ee73b4_0  nvidia/label/cuda-11.6.1       2MB
+  + libnvjpeg-dev            11.6.1.112  he5fca74_0  nvidia/label/cuda-11.6.1       2MB
+  + nsight-compute           2022.1.1.2  0           nvidia/label/cuda-11.6.1     473MB
+
+  Summary:
+
+  Install: 46 packages
+
+  Total download: 3GB
+
+─────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+Transaction starting
+Linking cuda-samples-11.6.101-h8efea70_0
+Linking nsight-compute-2022.1.1.2-0
+Linking cuda-nvml-dev-11.6.55-haa9ef22_0
+Linking cuda-nsight-11.6.112-0
+Linking libcufile-1.2.1.4-0
+Linking cuda-nvdisasm-11.6.104-he451785_0
+Linking cuda-nvprof-11.6.112-h7234bcb_0
+Linking cuda-driver-dev-11.6.55-0
+Linking cuda-cudart-11.6.55-he381448_0
+Linking cuda-nvrtc-11.6.112-h6a5ffed_0
+Linking libcublas-11.8.1.74-h1e58c10_0
+Linking libcufft-10.7.1.112-hf425ae0_0
+Linking libcurand-10.2.9.55-h7c349da_0
+Linking libcusolver-11.3.3.112-hc34d849_0
+Linking libcusparse-11.7.2.112-hc8dcb0d_0
+Linking libnpp-11.6.2.112-h1b7d7c6_0
+Linking libnvjpeg-11.6.1.112-h9ee73b4_0
+Linking cuda-cupti-11.6.112-h2b04436_0
+Linking cuda-gdb-11.6.112-h0547acf_0
+Linking cuda-nvtx-11.6.112-ha784fc9_0
+Linking cuda-sanitizer-api-11.6.112-h31401fe_0
+Linking cuda-memcheck-11.6.112-h2d95318_0
+Linking cuda-cuobjdump-11.6.112-h411b612_0
+Linking cuda-cuxxfilt-11.6.112-h568fa92_0
+Linking cuda-nvcc-11.6.112-hf7fc535_0
+Linking cuda-nvprune-11.6.112-h9eb4445_0
+Linking cuda-cccl-11.6.55-hf6102b2_0
+Linking cuda-nsight-compute-11.6.1-0
+Linking libcufile-dev-1.2.1.4-0
+Linking gds-tools-1.2.1.4-0
+Linking cuda-nvvp-11.6.112-h833d014_0
+Linking cuda-nvrtc-dev-11.6.112-h184e709_0
+Linking libcublas-dev-11.8.1.74-h7a51e1f_0
+Linking libcufft-dev-10.7.1.112-ha5ce4c0_0
+Linking libcurand-dev-10.2.9.55-hd2e71f0_0
+Linking libcusparse-dev-11.7.2.112-hc2e3d5c_0
+Linking libnpp-dev-11.6.2.112-h8488edb_0
+Linking libnvjpeg-dev-11.6.1.112-he5fca74_0
+Linking cuda-libraries-11.6.1-0
+Linking cuda-command-line-tools-11.6.1-0
+Linking cuda-compiler-11.6.1-0
+Linking cuda-cudart-dev-11.6.55-h42ad0f4_0
+Linking cuda-libraries-dev-11.6.1-0
+Linking cuda-visual-tools-11.6.1-0
+Linking cuda-tools-11.6.1-0
+Linking cuda-toolkit-11.6.1-0
+
+Transaction finished
+
+To activate this environment, use:
+
+    micromamba activate MonoGS
+
+Or to execute a single command in this environment, use:
+
+    micromamba run -n MonoGS mycommand
+
+Requirement already satisfied: plyfile==0.8.1 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from -r requirement.txt (line 1)) (0.8.1)
+Requirement already satisfied: tqdm in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from -r requirement.txt (line 2)) (4.66.5)
+Collecting opencv-python==4.8.1.78 (from -r requirement.txt (line 3))
+  Using cached opencv_python-4.8.1.78-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (19 kB)
+Collecting munch (from -r requirement.txt (line 4))
+  Using cached munch-4.0.0-py2.py3-none-any.whl.metadata (5.9 kB)
+Collecting trimesh (from -r requirement.txt (line 5))
+  Using cached trimesh-4.4.1-py3-none-any.whl.metadata (18 kB)
+Collecting evo==1.11.0 (from -r requirement.txt (line 6))
+  Using cached evo-1.11.0-py3-none-any.whl
+Collecting open3d==0.17.0 (from -r requirement.txt (line 7))
+  Using cached open3d-0.17.0-cp37-cp37m-manylinux_2_27_x86_64.whl.metadata (4.2 kB)
+Collecting torchmetrics (from -r requirement.txt (line 8))
+  Using cached torchmetrics-0.11.4-py3-none-any.whl.metadata (15 kB)
+Collecting imgviz (from -r requirement.txt (line 9))
+  Using cached imgviz-1.7.5-py3-none-any.whl
+Collecting PyOpenGL (from -r requirement.txt (line 10))
+  Using cached PyOpenGL-3.1.7-py3-none-any.whl.metadata (3.2 kB)
+Collecting glfw (from -r requirement.txt (line 11))
+  Using cached glfw-2.7.0-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2014_x86_64.whl.metadata (5.4 kB)
+Collecting PyGLM (from -r requirement.txt (line 12))
+  Using cached PyGLM-2.7.3-cp37-cp37m-linux_x86_64.whl
+Collecting wandb (from -r requirement.txt (line 13))
+  Using cached wandb-0.18.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.7 kB)
+Collecting lpips (from -r requirement.txt (line 14))
+  Using cached lpips-0.1.4-py3-none-any.whl.metadata (10 kB)
+Collecting rich (from -r requirement.txt (line 15))
+  Using cached rich-13.8.1-py3-none-any.whl.metadata (18 kB)
+Collecting ruff (from -r requirement.txt (line 16))
+  Using cached ruff-0.7.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (25 kB)
+Requirement already satisfied: numpy>=1.17 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from plyfile==0.8.1->-r requirement.txt (line 1)) (1.21.6)
+Collecting matplotlib (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached matplotlib-3.5.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl.metadata (6.7 kB)
+Collecting scipy>=1.2 (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached scipy-1.7.3-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl.metadata (2.2 kB)
+Collecting pandas (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached pandas-1.3.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (12 kB)
+Collecting seaborn>=0.9 (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached seaborn-0.12.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting natsort (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached natsort-8.4.0-py3-none-any.whl.metadata (21 kB)
+Collecting argcomplete (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached argcomplete-3.1.2-py3-none-any.whl.metadata (16 kB)
+Requirement already satisfied: colorama>=0.3 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from evo==1.11.0->-r requirement.txt (line 6)) (0.4.6)
+Collecting pygments (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached pygments-2.17.2-py3-none-any.whl.metadata (2.6 kB)
+Collecting pyyaml (from evo==1.11.0->-r requirement.txt (line 6))
+  Using cached PyYAML-6.0.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+Requirement already satisfied: pillow in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from evo==1.11.0->-r requirement.txt (line 6)) (9.5.0)
+Collecting dash>=2.6.0 (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached dash-2.15.0-py3-none-any.whl.metadata (11 kB)
+Collecting werkzeug>=2.2.3 (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached Werkzeug-2.2.3-py3-none-any.whl.metadata (4.4 kB)
+Collecting nbformat==5.7.0 (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached nbformat-5.7.0-py3-none-any.whl.metadata (4.7 kB)
+Collecting configargparse (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached ConfigArgParse-1.7-py3-none-any.whl.metadata (23 kB)
+Collecting ipywidgets>=8.0.4 (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached ipywidgets-8.1.5-py3-none-any.whl.metadata (2.3 kB)
+Collecting addict (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached addict-2.4.0-py3-none-any.whl.metadata (1.0 kB)
+Collecting scikit-learn>=0.21 (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached scikit_learn-1.0.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (10 kB)
+Collecting pyquaternion (from open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached pyquaternion-0.9.9-py3-none-any.whl.metadata (1.4 kB)
+Collecting fastjsonschema (from nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached fastjsonschema-2.20.0-py3-none-any.whl.metadata (2.1 kB)
+Collecting importlib-metadata>=3.6 (from nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached importlib_metadata-6.7.0-py3-none-any.whl.metadata (4.9 kB)
+Collecting jsonschema>=2.6 (from nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached jsonschema-4.17.3-py3-none-any.whl.metadata (7.9 kB)
+Collecting jupyter-core (from nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached jupyter_core-4.12.0-py3-none-any.whl.metadata (4.7 kB)
+Collecting traitlets>=5.1 (from nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached traitlets-5.9.0-py3-none-any.whl.metadata (10 kB)
+Requirement already satisfied: torch>=1.8.1 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from torchmetrics->-r requirement.txt (line 8)) (1.13.0+cu116)
+Collecting packaging (from torchmetrics->-r requirement.txt (line 8))
+  Using cached packaging-24.0-py3-none-any.whl.metadata (3.2 kB)
+Requirement already satisfied: typing-extensions in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from torchmetrics->-r requirement.txt (line 8)) (4.7.1)
+Collecting click!=8.0.0,>=7.1 (from wandb->-r requirement.txt (line 13))
+  Using cached click-8.1.7-py3-none-any.whl.metadata (3.0 kB)
+Collecting docker-pycreds>=0.4.0 (from wandb->-r requirement.txt (line 13))
+  Using cached docker_pycreds-0.4.0-py2.py3-none-any.whl.metadata (1.8 kB)
+Collecting gitpython!=3.1.29,>=1.0.0 (from wandb->-r requirement.txt (line 13))
+  Using cached GitPython-3.1.43-py3-none-any.whl.metadata (13 kB)
+Collecting platformdirs (from wandb->-r requirement.txt (line 13))
+  Using cached platformdirs-4.0.0-py3-none-any.whl.metadata (11 kB)
+Collecting protobuf!=4.21.0,!=5.28.0,<6,>=3.12.0 (from wandb->-r requirement.txt (line 13))
+  Using cached protobuf-4.24.4-cp37-abi3-manylinux2014_x86_64.whl.metadata (540 bytes)
+Collecting psutil>=5.0.0 (from wandb->-r requirement.txt (line 13))
+  Using cached psutil-6.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (22 kB)
+Requirement already satisfied: requests<3,>=2.0.0 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from wandb->-r requirement.txt (line 13)) (2.31.0)
+Collecting sentry-sdk>=2.0.0 (from wandb->-r requirement.txt (line 13))
+  Using cached sentry_sdk-2.17.0-py2.py3-none-any.whl.metadata (9.8 kB)
+Collecting setproctitle (from wandb->-r requirement.txt (line 13))
+  Using cached setproctitle-1.3.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.9 kB)
+Requirement already satisfied: setuptools in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from wandb->-r requirement.txt (line 13)) (69.0.3)
+Requirement already satisfied: torchvision>=0.2.1 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from lpips->-r requirement.txt (line 14)) (0.14.0+cu116)
+Collecting markdown-it-py>=2.2.0 (from rich->-r requirement.txt (line 15))
+  Using cached markdown_it_py-2.2.0-py3-none-any.whl.metadata (6.8 kB)
+Collecting Flask<3.1,>=1.0.4 (from dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached Flask-2.2.5-py3-none-any.whl.metadata (3.9 kB)
+Collecting plotly>=5.0.0 (from dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached plotly-5.18.0-py3-none-any.whl.metadata (7.0 kB)
+Collecting dash-html-components==2.0.0 (from dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached dash_html_components-2.0.0-py3-none-any.whl.metadata (3.8 kB)
+Collecting dash-core-components==2.0.0 (from dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached dash_core_components-2.0.0-py3-none-any.whl.metadata (2.9 kB)
+Collecting dash-table==5.0.0 (from dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached dash_table-5.0.0-py3-none-any.whl.metadata (2.4 kB)
+Collecting retrying (from dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached retrying-1.3.4-py3-none-any.whl.metadata (6.9 kB)
+Collecting nest-asyncio (from dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached nest_asyncio-1.6.0-py3-none-any.whl.metadata (2.8 kB)
+Collecting six>=1.4.0 (from docker-pycreds>=0.4.0->wandb->-r requirement.txt (line 13))
+  Using cached six-1.16.0-py2.py3-none-any.whl.metadata (1.8 kB)
+Collecting gitdb<5,>=4.0.1 (from gitpython!=3.1.29,>=1.0.0->wandb->-r requirement.txt (line 13))
+  Using cached gitdb-4.0.11-py3-none-any.whl.metadata (1.2 kB)
+Collecting zipp>=0.5 (from importlib-metadata>=3.6->nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached zipp-3.15.0-py3-none-any.whl.metadata (3.7 kB)
+Collecting comm>=0.1.3 (from ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached comm-0.1.4-py3-none-any.whl.metadata (4.2 kB)
+Collecting ipython>=6.1.0 (from ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached ipython-7.34.0-py3-none-any.whl.metadata (4.3 kB)
+Collecting widgetsnbextension~=4.0.12 (from ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached widgetsnbextension-4.0.13-py3-none-any.whl.metadata (1.6 kB)
+Collecting jupyterlab-widgets~=3.0.12 (from ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached jupyterlab_widgets-3.0.13-py3-none-any.whl.metadata (4.1 kB)
+Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich->-r requirement.txt (line 15))
+  Using cached mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+Collecting cycler>=0.10 (from matplotlib->evo==1.11.0->-r requirement.txt (line 6))
+  Using cached cycler-0.11.0-py3-none-any.whl.metadata (785 bytes)
+Collecting fonttools>=4.22.0 (from matplotlib->evo==1.11.0->-r requirement.txt (line 6))
+  Using cached fonttools-4.38.0-py3-none-any.whl.metadata (138 kB)
+Collecting kiwisolver>=1.0.1 (from matplotlib->evo==1.11.0->-r requirement.txt (line 6))
+  Using cached kiwisolver-1.4.5-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl.metadata (6.4 kB)
+Collecting pyparsing>=2.2.1 (from matplotlib->evo==1.11.0->-r requirement.txt (line 6))
+  Using cached pyparsing-3.1.4-py3-none-any.whl.metadata (5.1 kB)
+Collecting python-dateutil>=2.7 (from matplotlib->evo==1.11.0->-r requirement.txt (line 6))
+  Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting pytz>=2017.3 (from pandas->evo==1.11.0->-r requirement.txt (line 6))
+  Using cached pytz-2024.2-py2.py3-none-any.whl.metadata (22 kB)
+Requirement already satisfied: charset-normalizer<4,>=2 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from requests<3,>=2.0.0->wandb->-r requirement.txt (line 13)) (3.4.0)
+Requirement already satisfied: idna<4,>=2.5 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from requests<3,>=2.0.0->wandb->-r requirement.txt (line 13)) (3.10)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from requests<3,>=2.0.0->wandb->-r requirement.txt (line 13)) (2.0.7)
+Requirement already satisfied: certifi>=2017.4.17 in /scratch/runyi_yang/micromamba/envs/MonoGS/lib/python3.7/site-packages (from requests<3,>=2.0.0->wandb->-r requirement.txt (line 13)) (2024.8.30)
+Collecting joblib>=0.11 (from scikit-learn>=0.21->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached joblib-1.3.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting threadpoolctl>=2.0.0 (from scikit-learn>=0.21->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached threadpoolctl-3.1.0-py3-none-any.whl.metadata (9.2 kB)
+Collecting MarkupSafe>=2.1.1 (from werkzeug>=2.2.3->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached MarkupSafe-2.1.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.0 kB)
+Collecting Jinja2>=3.0 (from Flask<3.1,>=1.0.4->dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached jinja2-3.1.4-py3-none-any.whl.metadata (2.6 kB)
+Collecting itsdangerous>=2.0 (from Flask<3.1,>=1.0.4->dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached itsdangerous-2.1.2-py3-none-any.whl.metadata (2.9 kB)
+Collecting smmap<6,>=3.0.1 (from gitdb<5,>=4.0.1->gitpython!=3.1.29,>=1.0.0->wandb->-r requirement.txt (line 13))
+  Using cached smmap-5.0.1-py3-none-any.whl.metadata (4.3 kB)
+Collecting jedi>=0.16 (from ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached jedi-0.19.1-py2.py3-none-any.whl.metadata (22 kB)
+Collecting decorator (from ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached decorator-5.1.1-py3-none-any.whl.metadata (4.0 kB)
+Collecting pickleshare (from ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached pickleshare-0.7.5-py2.py3-none-any.whl.metadata (1.5 kB)
+Collecting prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0 (from ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached prompt_toolkit-3.0.48-py3-none-any.whl.metadata (6.4 kB)
+Collecting backcall (from ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached backcall-0.2.0-py2.py3-none-any.whl.metadata (2.0 kB)
+Collecting matplotlib-inline (from ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached matplotlib_inline-0.1.6-py3-none-any.whl.metadata (2.8 kB)
+Collecting pexpect>4.3 (from ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached pexpect-4.9.0-py2.py3-none-any.whl.metadata (2.5 kB)
+Collecting attrs>=17.4.0 (from jsonschema>=2.6->nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached attrs-24.2.0-py3-none-any.whl.metadata (11 kB)
+Collecting importlib-resources>=1.4.0 (from jsonschema>=2.6->nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached importlib_resources-5.12.0-py3-none-any.whl.metadata (4.1 kB)
+Collecting pkgutil-resolve-name>=1.3.10 (from jsonschema>=2.6->nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached pkgutil_resolve_name-1.3.10-py3-none-any.whl.metadata (624 bytes)
+Collecting pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,>=0.14.0 (from jsonschema>=2.6->nbformat==5.7.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached pyrsistent-0.19.3-py3-none-any.whl.metadata (27 kB)
+Collecting tenacity>=6.2.0 (from plotly>=5.0.0->dash>=2.6.0->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached tenacity-8.2.3-py3-none-any.whl.metadata (1.0 kB)
+Collecting parso<0.9.0,>=0.8.3 (from jedi>=0.16->ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached parso-0.8.4-py2.py3-none-any.whl.metadata (7.7 kB)
+Collecting ptyprocess>=0.5 (from pexpect>4.3->ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached ptyprocess-0.7.0-py2.py3-none-any.whl.metadata (1.3 kB)
+Collecting wcwidth (from prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0->ipython>=6.1.0->ipywidgets>=8.0.4->open3d==0.17.0->-r requirement.txt (line 7))
+  Using cached wcwidth-0.2.13-py2.py3-none-any.whl.metadata (14 kB)
+Using cached opencv_python-4.8.1.78-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (61.7 MB)
+Using cached open3d-0.17.0-cp37-cp37m-manylinux_2_27_x86_64.whl (420.4 MB)
+Using cached nbformat-5.7.0-py3-none-any.whl (77 kB)
+Using cached munch-4.0.0-py2.py3-none-any.whl (9.9 kB)
+Using cached trimesh-4.4.1-py3-none-any.whl (694 kB)
+Using cached torchmetrics-0.11.4-py3-none-any.whl (519 kB)
+Using cached PyOpenGL-3.1.7-py3-none-any.whl (2.4 MB)
+Using cached glfw-2.7.0-py2.py27.py3.py30.py31.py32.py33.py34.py35.py36.py37.py38-none-manylinux2014_x86_64.whl (211 kB)
+Using cached wandb-0.18.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.0 MB)
+Using cached lpips-0.1.4-py3-none-any.whl (53 kB)
+Using cached rich-13.8.1-py3-none-any.whl (241 kB)
+Using cached ruff-0.7.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.0 MB)
+Using cached click-8.1.7-py3-none-any.whl (97 kB)
+Using cached dash-2.15.0-py3-none-any.whl (10.2 MB)
+Using cached dash_core_components-2.0.0-py3-none-any.whl (3.8 kB)
+Using cached dash_html_components-2.0.0-py3-none-any.whl (4.1 kB)
+Using cached dash_table-5.0.0-py3-none-any.whl (3.9 kB)
+Using cached docker_pycreds-0.4.0-py2.py3-none-any.whl (9.0 kB)
+Using cached GitPython-3.1.43-py3-none-any.whl (207 kB)
+Using cached importlib_metadata-6.7.0-py3-none-any.whl (22 kB)
+Using cached ipywidgets-8.1.5-py3-none-any.whl (139 kB)
+Using cached markdown_it_py-2.2.0-py3-none-any.whl (84 kB)
+Using cached matplotlib-3.5.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl (11.2 MB)
+Using cached packaging-24.0-py3-none-any.whl (53 kB)
+Using cached pandas-1.3.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.3 MB)
+Using cached protobuf-4.24.4-cp37-abi3-manylinux2014_x86_64.whl (311 kB)
+Using cached psutil-6.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (287 kB)
+Using cached pygments-2.17.2-py3-none-any.whl (1.2 MB)
+Using cached PyYAML-6.0.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (670 kB)
+Using cached scikit_learn-1.0.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (24.8 MB)
+Using cached scipy-1.7.3-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (38.1 MB)
+Using cached seaborn-0.12.2-py3-none-any.whl (293 kB)
+Using cached sentry_sdk-2.17.0-py2.py3-none-any.whl (314 kB)
+Using cached Werkzeug-2.2.3-py3-none-any.whl (233 kB)
+Using cached addict-2.4.0-py3-none-any.whl (3.8 kB)
+Using cached argcomplete-3.1.2-py3-none-any.whl (41 kB)
+Using cached ConfigArgParse-1.7-py3-none-any.whl (25 kB)
+Using cached natsort-8.4.0-py3-none-any.whl (38 kB)
+Using cached platformdirs-4.0.0-py3-none-any.whl (17 kB)
+Using cached pyquaternion-0.9.9-py3-none-any.whl (14 kB)
+Using cached setproctitle-1.3.3-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (30 kB)
+Using cached comm-0.1.4-py3-none-any.whl (6.6 kB)
+Using cached cycler-0.11.0-py3-none-any.whl (6.4 kB)
+Using cached Flask-2.2.5-py3-none-any.whl (101 kB)
+Using cached fonttools-4.38.0-py3-none-any.whl (965 kB)
+Using cached gitdb-4.0.11-py3-none-any.whl (62 kB)
+Using cached ipython-7.34.0-py3-none-any.whl (793 kB)
+Using cached joblib-1.3.2-py3-none-any.whl (302 kB)
+Using cached jsonschema-4.17.3-py3-none-any.whl (90 kB)
+Using cached jupyterlab_widgets-3.0.13-py3-none-any.whl (214 kB)
+Using cached kiwisolver-1.4.5-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl (1.1 MB)
+Using cached MarkupSafe-2.1.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (25 kB)
+Using cached mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Using cached plotly-5.18.0-py3-none-any.whl (15.6 MB)
+Using cached pyparsing-3.1.4-py3-none-any.whl (104 kB)
+Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Using cached pytz-2024.2-py2.py3-none-any.whl (508 kB)
+Using cached six-1.16.0-py2.py3-none-any.whl (11 kB)
+Using cached threadpoolctl-3.1.0-py3-none-any.whl (14 kB)
+Using cached traitlets-5.9.0-py3-none-any.whl (117 kB)
+Using cached widgetsnbextension-4.0.13-py3-none-any.whl (2.3 MB)
+Using cached zipp-3.15.0-py3-none-any.whl (6.8 kB)
+Using cached fastjsonschema-2.20.0-py3-none-any.whl (23 kB)
+Using cached jupyter_core-4.12.0-py3-none-any.whl (89 kB)
+Using cached nest_asyncio-1.6.0-py3-none-any.whl (5.2 kB)
+Using cached retrying-1.3.4-py3-none-any.whl (11 kB)
+Using cached attrs-24.2.0-py3-none-any.whl (63 kB)
+Using cached importlib_resources-5.12.0-py3-none-any.whl (36 kB)
+Using cached itsdangerous-2.1.2-py3-none-any.whl (15 kB)
+Using cached jedi-0.19.1-py2.py3-none-any.whl (1.6 MB)
+Using cached jinja2-3.1.4-py3-none-any.whl (133 kB)
+Using cached pexpect-4.9.0-py2.py3-none-any.whl (63 kB)
+Using cached pkgutil_resolve_name-1.3.10-py3-none-any.whl (4.7 kB)
+Using cached prompt_toolkit-3.0.48-py3-none-any.whl (386 kB)
+Using cached pyrsistent-0.19.3-py3-none-any.whl (57 kB)
+Using cached smmap-5.0.1-py3-none-any.whl (24 kB)
+Using cached tenacity-8.2.3-py3-none-any.whl (24 kB)
+Using cached backcall-0.2.0-py2.py3-none-any.whl (11 kB)
+Using cached decorator-5.1.1-py3-none-any.whl (9.1 kB)
+Using cached matplotlib_inline-0.1.6-py3-none-any.whl (9.4 kB)
+Using cached pickleshare-0.7.5-py2.py3-none-any.whl (6.9 kB)
+Using cached parso-0.8.4-py2.py3-none-any.whl (103 kB)
+Using cached ptyprocess-0.7.0-py2.py3-none-any.whl (13 kB)
+Using cached wcwidth-0.2.13-py2.py3-none-any.whl (34 kB)
+Installing collected packages: wcwidth, pytz, PyOpenGL, PyGLM, ptyprocess, pickleshare, glfw, fastjsonschema, dash-table, dash-html-components, dash-core-components, backcall, addict, zipp, widgetsnbextension, trimesh, traitlets, threadpoolctl, tenacity, smmap, six, setproctitle, sentry-sdk, scipy, ruff, pyyaml, pyrsistent, pyquaternion, pyparsing, pygments, psutil, protobuf, prompt-toolkit, platformdirs, pkgutil-resolve-name, pexpect, parso, packaging, opencv-python, nest-asyncio, natsort, mdurl, MarkupSafe, kiwisolver, jupyterlab-widgets, joblib, itsdangerous, fonttools, decorator, cycler, configargparse, werkzeug, torchmetrics, scikit-learn, retrying, python-dateutil, plotly, matplotlib-inline, markdown-it-py, jupyter-core, Jinja2, jedi, importlib-resources, importlib-metadata, gitdb, docker-pycreds, comm, rich, pandas, munch, matplotlib, lpips, ipython, gitpython, click, attrs, argcomplete, wandb, seaborn, jsonschema, ipywidgets, imgviz, Flask, nbformat, evo, dash, open3d
+Successfully installed Flask-2.2.5 Jinja2-3.1.4 MarkupSafe-2.1.5 PyGLM-2.7.3 PyOpenGL-3.1.7 addict-2.4.0 argcomplete-3.1.2 attrs-24.2.0 backcall-0.2.0 click-8.1.7 comm-0.1.4 configargparse-1.7 cycler-0.11.0 dash-2.15.0 dash-core-components-2.0.0 dash-html-components-2.0.0 dash-table-5.0.0 decorator-5.1.1 docker-pycreds-0.4.0 evo-1.11.0 fastjsonschema-2.20.0 fonttools-4.38.0 gitdb-4.0.11 gitpython-3.1.43 glfw-2.7.0 imgviz-1.7.5 importlib-metadata-6.7.0 importlib-resources-5.12.0 ipython-7.34.0 ipywidgets-8.1.5 itsdangerous-2.1.2 jedi-0.19.1 joblib-1.3.2 jsonschema-4.17.3 jupyter-core-4.12.0 jupyterlab-widgets-3.0.13 kiwisolver-1.4.5 lpips-0.1.4 markdown-it-py-2.2.0 matplotlib-3.5.3 matplotlib-inline-0.1.6 mdurl-0.1.2 munch-4.0.0 natsort-8.4.0 nbformat-5.7.0 nest-asyncio-1.6.0 open3d-0.17.0 opencv-python-4.8.1.78 packaging-24.0 pandas-1.3.5 parso-0.8.4 pexpect-4.9.0 pickleshare-0.7.5 pkgutil-resolve-name-1.3.10 platformdirs-4.0.0 plotly-5.18.0 prompt-toolkit-3.0.48 protobuf-4.24.4 psutil-6.1.0 ptyprocess-0.7.0 pygments-2.17.2 pyparsing-3.1.4 pyquaternion-0.9.9 pyrsistent-0.19.3 python-dateutil-2.9.0.post0 pytz-2024.2 pyyaml-6.0.1 retrying-1.3.4 rich-13.8.1 ruff-0.7.1 scikit-learn-1.0.2 scipy-1.7.3 seaborn-0.12.2 sentry-sdk-2.17.0 setproctitle-1.3.3 six-1.16.0 smmap-5.0.1 tenacity-8.2.3 threadpoolctl-3.1.0 torchmetrics-0.11.4 traitlets-5.9.0 trimesh-4.4.1 wandb-0.18.5 wcwidth-0.2.13 werkzeug-2.2.3 widgetsnbextension-4.0.13 zipp-3.15.0
+Obtaining file:///home/runyi_yang/project/SGSLAM/submodules/simple-knn
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Installing collected packages: simple_knn
+  Running setup.py develop for simple_knn
+Successfully installed simple_knn-0.0.0
+Obtaining file:///home/runyi_yang/project/SGSLAM/submodules/diff-gaussian-rasterization
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Installing collected packages: diff_gaussian_rasterization
+  Running setup.py develop for diff_gaussian_rasterization
+Successfully installed diff_gaussian_rasterization-0.0.0

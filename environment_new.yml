@@ -1,4 +1,4 @@
-name: MonoGS
+name: rasterizer
 channels:
   - pytorch
   - conda-forge

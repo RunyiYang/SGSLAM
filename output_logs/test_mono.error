@@ -1,178 +1,73 @@
---shell: 1 required TEXT:{bash,cmd.exe,dash,fish,nu,posix,powershell,tcsh,xonsh,zsh} missing
-Run with --help for more information.
-/var/lib/slurm/slurmd/job97238/slurm_script: line 18: mircomamba: command not found
-critical libmamba Cannot activate, prefix does not exist at: '/scratch/runyi_yang/micromamba/envs/MonoGS'
-error: externally-managed-environment
-
-× This environment is externally managed
-╰─> To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
-    
-    If you wish to install a non-Debian-packaged Python package,
-    create a virtual environment using python3 -m venv path/to/venv.
-    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
-    sure you have python3-full installed.
-    
-    If you wish to install a non-Debian packaged Python application,
-    it may be easiest to use pipx install xyz, which will manage a
-    virtual environment for you. Make sure you have pipx installed.
-    
-    See /usr/share/doc/python3.12/README.venv for more information.
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
-error: externally-managed-environment
-
-× This environment is externally managed
-╰─> To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
-    
-    If you wish to install a non-Debian-packaged Python package,
-    create a virtual environment using python3 -m venv path/to/venv.
-    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
-    sure you have python3-full installed.
-    
-    If you wish to install a non-Debian packaged Python application,
-    it may be easiest to use pipx install xyz, which will manage a
-    virtual environment for you. Make sure you have pipx installed.
-    
-    See /usr/share/doc/python3.12/README.venv for more information.
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
-info     libmamba ****************** Backtrace Start ******************
-debug    libmamba Loading configuration
-trace    libmamba Compute configurable 'create_base'
-trace    libmamba Compute configurable 'no_env'
-trace    libmamba Compute configurable 'no_rc'
-trace    libmamba Compute configurable 'rc_files'
-trace    libmamba Compute configurable 'root_prefix'
-trace    libmamba Get RC files configuration from locations up to HomeDir
-trace    libmamba Configuration not found at '/home/runyi_yang/.mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/.mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/.mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.conda/.condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/.condarc'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.mambarc'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc.d'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.condarc'
-trace    libmamba Configuration not found at '/var/lib/conda/.mambarc'
-trace    libmamba Configuration not found at '/var/lib/conda/condarc.d/'
-trace    libmamba Configuration not found at '/var/lib/conda/condarc'
-trace    libmamba Configuration not found at '/var/lib/conda/.condarc'
-trace    libmamba Configuration not found at '/etc/conda/.mambarc'
-trace    libmamba Configuration not found at '/etc/conda/condarc.d/'
-trace    libmamba Configuration not found at '/etc/conda/condarc'
-trace    libmamba Configuration not found at '/etc/conda/.condarc'
-trace    libmamba Update configurable 'no_env'
-trace    libmamba Compute configurable 'envs_dirs'
-trace    libmamba Compute configurable 'file_specs'
-trace    libmamba Compute configurable 'spec_file_env_name'
-trace    libmamba Compute configurable 'env_name'
-trace    libmamba Compute configurable 'use_target_prefix_fallback'
-trace    libmamba Compute configurable 'target_prefix'
-trace    libmamba Get RC files configuration from locations up to TargetPrefix
-trace    libmamba Configuration not found at '/home/runyi_yang/.mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.mamba/.mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/mamba/.mambarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.conda/condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.conda/.condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc.d'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/condarc'
-trace    libmamba Configuration not found at '/home/runyi_yang/.config/conda/.condarc'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.mambarc'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc.d'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/condarc'
-trace    libmamba Configuration not found at '/scratch/runyi_yang/micromamba/.condarc'
-trace    libmamba Configuration not found at '/var/lib/conda/.mambarc'
-trace    libmamba Configuration not found at '/var/lib/conda/condarc.d/'
-trace    libmamba Configuration not found at '/var/lib/conda/condarc'
-trace    libmamba Configuration not found at '/var/lib/conda/.condarc'
-trace    libmamba Configuration not found at '/etc/conda/.mambarc'
-trace    libmamba Configuration not found at '/etc/conda/condarc.d/'
-trace    libmamba Configuration not found at '/etc/conda/condarc'
-trace    libmamba Configuration not found at '/etc/conda/.condarc'
-trace    libmamba Update configurable 'no_env'
-trace    libmamba Compute configurable 'relocate_prefix'
-trace    libmamba Compute configurable 'target_prefix_checks'
-error    libmamba No target prefix specified
-critical libmamba Aborting.
-info     libmamba ****************** Backtrace End ********************
-error: externally-managed-environment
-
-× This environment is externally managed
-╰─> To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
-    
-    If you wish to install a non-Debian-packaged Python package,
-    create a virtual environment using python3 -m venv path/to/venv.
-    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
-    sure you have python3-full installed.
-    
-    If you wish to install a non-Debian packaged Python application,
-    it may be easiest to use pipx install xyz, which will manage a
-    virtual environment for you. Make sure you have pipx installed.
-    
-    See /usr/share/doc/python3.12/README.venv for more information.
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
-error: externally-managed-environment
-
-× This environment is externally managed
-╰─> To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
-    
-    If you wish to install a non-Debian-packaged Python package,
-    create a virtual environment using python3 -m venv path/to/venv.
-    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
-    sure you have python3-full installed.
-    
-    If you wish to install a non-Debian packaged Python application,
-    it may be easiest to use pipx install xyz, which will manage a
-    virtual environment for you. Make sure you have pipx installed.
-    
-    See /usr/share/doc/python3.12/README.venv for more information.
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
-error: externally-managed-environment
-
-× This environment is externally managed
-╰─> To install Python packages system-wide, try apt install
-    python3-xyz, where xyz is the package you are trying to
-    install.
-    
-    If you wish to install a non-Debian-packaged Python package,
-    create a virtual environment using python3 -m venv path/to/venv.
-    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
-    sure you have python3-full installed.
-    
-    If you wish to install a non-Debian packaged Python application,
-    it may be easiest to use pipx install xyz, which will manage a
-    virtual environment for you. Make sure you have pipx installed.
-    
-    See /usr/share/doc/python3.12/README.venv for more information.
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
+warning  libmamba [cuda-nsight-11.6.112-0] The following files were already present in the environment:
+    - LICENSE
+warning  libmamba [cuda-cudart-11.6.55-he381448_0] The following files were already present in the environment:
+    - lib/libcudart.so.11.0
+    - lib/libcudart.so.11.6.55
+warning  libmamba [cuda-nvrtc-11.6.112-h6a5ffed_0] The following files were already present in the environment:
+    - lib/libnvrtc-builtins.so.11.6
+    - lib/libnvrtc.so.11.2
+warning  libmamba [libcublas-11.8.1.74-h1e58c10_0] The following files were already present in the environment:
+    - lib/libcublas.so.11
+    - lib/libcublasLt.so.11
+    - lib/libnvblas.so.11
+warning  libmamba [libcufft-10.7.1.112-hf425ae0_0] The following files were already present in the environment:
+    - lib/libcufft.so.10
+    - lib/libcufftw.so.10
+warning  libmamba [libcurand-10.2.9.55-h7c349da_0] The following files were already present in the environment:
+    - lib/libcurand.so.10
+warning  libmamba [libcusolver-11.3.3.112-hc34d849_0] The following files were already present in the environment:
+    - lib/libcusolver.so.11
+    - lib/libcusolverMg.so.11
+warning  libmamba [libcusparse-11.7.2.112-hc8dcb0d_0] The following files were already present in the environment:
+    - lib/libcusparse.so.11
+warning  libmamba [libnpp-11.6.2.112-h1b7d7c6_0] The following files were already present in the environment:
+    - lib/libnppc.so.11
+    - lib/libnppial.so.11
+    - lib/libnppicc.so.11
+    - lib/libnppidei.so.11
+    - lib/libnppif.so.11
+    - lib/libnppig.so.11
+    - lib/libnppim.so.11
+    - lib/libnppist.so.11
+    - lib/libnppisu.so.11
+    - lib/libnppitc.so.11
+    - lib/libnpps.so.11
+warning  libmamba [libnvjpeg-11.6.1.112-h9ee73b4_0] The following files were already present in the environment:
+    - lib/libnvjpeg.so.11
+warning  libmamba [cuda-nvtx-11.6.112-ha784fc9_0] The following files were already present in the environment:
+    - lib/libnvToolsExt.so
+    - lib/libnvToolsExt.so.1
+    - lib/libnvToolsExt.so.1.0.0
+warning  libmamba [cuda-nvrtc-dev-11.6.112-h184e709_0] The following files were already present in the environment:
+    - lib/libnvrtc-builtins.so
+    - lib/libnvrtc.so
+warning  libmamba [libcublas-dev-11.8.1.74-h7a51e1f_0] The following files were already present in the environment:
+    - lib/libcublas.so
+    - lib/libcublasLt.so
+    - lib/libnvblas.so
+warning  libmamba [libcufft-dev-10.7.1.112-ha5ce4c0_0] The following files were already present in the environment:
+    - lib/libcufft.so
+    - lib/libcufftw.so
+warning  libmamba [libcurand-dev-10.2.9.55-hd2e71f0_0] The following files were already present in the environment:
+    - lib/libcurand.so
+warning  libmamba [libcusparse-dev-11.7.2.112-hc2e3d5c_0] The following files were already present in the environment:
+    - lib/libcusparse.so
+    - lib/libcusparse.so.11
+    - lib/libcusparse.so.11.7.2.112
+warning  libmamba [libnpp-dev-11.6.2.112-h8488edb_0] The following files were already present in the environment:
+    - lib/libnppc.so
+    - lib/libnppial.so
+    - lib/libnppicc.so
+    - lib/libnppidei.so
+    - lib/libnppif.so
+    - lib/libnppig.so
+    - lib/libnppim.so
+    - lib/libnppist.so
+    - lib/libnppisu.so
+    - lib/libnppitc.so
+    - lib/libnpps.so
+warning  libmamba [libnvjpeg-dev-11.6.1.112-he5fca74_0] The following files were already present in the environment:
+    - lib/libnvjpeg.so
+warning  libmamba [cuda-cudart-dev-11.6.55-h42ad0f4_0] The following files were already present in the environment:
+    - lib/libcudadevrt.a
+    - lib/libcudart.so
