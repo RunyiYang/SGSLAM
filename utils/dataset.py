@@ -45,6 +45,35 @@ class ReplicaParser:
         self.frames = frames
 
 
+# class ReplicaParser:
+#     def __init__(self, input_folder):
+#         self.input_folder = input_folder
+#         self.color_paths = sorted(glob.glob(f"{self.input_folder}/results/frame*.jpg"))
+#         self.depth_paths = sorted(glob.glob(f"{self.input_folder}/results/depth*.png"))
+#         self.n_img = len(self.color_paths)
+#         self.load_poses(f"{self.input_folder}/traj.txt")
+
+#     def load_poses(self, path):
+#         self.poses = []
+#         with open(path, "r") as f:
+#             lines = f.readlines()
+
+#         frames = []
+#         for i in range(self.n_img):
+#             line = lines[i]
+#             pose = np.array(list(map(float, line.split()))).reshape(4, 4)
+#             pose = np.linalg.inv(pose)
+#             self.poses.append(pose)
+#             frame = {
+#                 "file_path": self.color_paths[i],
+#                 "depth_path": self.depth_paths[i],
+#                 "transform_matrix": pose.tolist(),
+#             }
+
+#             frames.append(frame)
+#         self.frames = frames
+
+
 class TUMParser:
     def __init__(self, input_folder):
         self.input_folder = input_folder
