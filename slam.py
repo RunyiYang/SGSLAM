@@ -22,7 +22,7 @@ from utils.dataset import load_dataset
 from utils.eval_utils import eval_ate, eval_rendering, save_gaussians
 from utils.logging_utils import Log
 from utils.multiprocessing_utils import FakeQueue
-from utils.slam_bckend import BackEnd
+from utils.slam_backend import BackEnd
 from utils.slam_frontend import FrontEnd
 import cv2
 from torchvision.transforms import Compose

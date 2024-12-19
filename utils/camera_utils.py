@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch.nn.functional as F
 from scipy.optimize import differential_evolution
-
+import pdb
 from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2, getWorld2View2
 from utils.slam_utils import image_gradient, image_gradient_mask, l1_loss, l1_loss_calculate, disparity_loss, absolute_loss, save_depth_images
 
@@ -70,7 +70,7 @@ class Camera(nn.Module):
         self.projection_matrix = projection_matrix.to(device=device)
     @staticmethod
     def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, c_dispairty, c_absolute, config, render_pkg_input):
-        gt_color, gt_depth, gt_pose, raw_image = dataset[idx]
+        gt_color, gt_depth, gt_pose, raw_image, dpt_depth = dataset[idx]
         #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
         def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input, c_dispairty, c_absolute):
             time1 = time.time()
@@ -81,6 +81,10 @@ class Camera(nn.Module):
             return disparity_depth
         
         depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
+        # np.save("/home/runyi_yang/SGSLAM/SGSLAM/datasets/replica/office0/new_dpt_depth/frame+"+idx+".npy", depth_anything_depth_output)
+        # pdb.set_trace()
+        # print(depth_anything_depth_output.shape, dpt_depth.shape, sum(dpt_depth[:, :, 0] - depth_anything_depth_output), sum(dpt_depth[:, :, 0] - dpt_depth[:, :, 1]), sum(dpt_depth[:, :, 0] - dpt_depth[:, :, 2]))
+        
         return Camera(
             idx,
             gt_color,

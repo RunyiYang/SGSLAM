@@ -21,6 +21,7 @@ class ReplicaParser:
         self.input_folder = input_folder
         self.color_paths = sorted(glob.glob(f"{self.input_folder}/results/frame*.jpg"))
         self.depth_paths = sorted(glob.glob(f"{self.input_folder}/results/depth*.png"))
+        self.dpt_depth = sorted(glob.glob(f"{self.input_folder}/dpt_depth/frame*.npy"))
         self.n_img = len(self.color_paths)
         self.load_poses(f"{self.input_folder}/traj.txt")
 
@@ -273,7 +274,8 @@ class MonocularDataset(BaseDataset):
         # depth parameters
         self.has_depth = True if "depth_scale" in calibration.keys() else False
         self.depth_scale = calibration["depth_scale"] if self.has_depth else None
-
+        # print(config["Dataset"])
+        self.use_dpt_depth = config["Dataset"]["use_dpt_depth"]
         # Default scene scale
         nerf_normalization_radius = 5
         self.scene_info = {
@@ -289,6 +291,7 @@ class MonocularDataset(BaseDataset):
 
         image = np.array(Image.open(color_path))
         depth = None
+        
 
         if self.disorted:
             image = cv2.remap(image, self.map1x, self.map1y, cv2.INTER_LINEAR)
@@ -305,7 +308,11 @@ class MonocularDataset(BaseDataset):
         )
         pose = torch.from_numpy(pose).to(device=self.device)
         raw_image = cv2.imread(color_path)
-        return image, depth, pose, raw_image
+        if self.use_dpt_depth == True:
+            dpt_depth = np.load(self.dpt_depth[idx])
+            return image, depth, pose, raw_image, dpt_depth
+        else:
+            return image, depth, pose, raw_image
 
 
 class StereoDataset(BaseDataset):
@@ -443,6 +450,7 @@ class ReplicaDataset(MonocularDataset):
         self.color_paths = parser.color_paths
         self.depth_paths = parser.depth_paths
         self.poses = parser.poses
+        self.dpt_depth = parser.dpt_depth if parser.dpt_depth else None
 
 
 class EurocDataset(StereoDataset):

@@ -21,6 +21,7 @@ from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.sh_utils import eval_sh
 
 
+
 def render(
     viewpoint_camera,
     pc: GaussianModel,
@@ -151,3 +152,129 @@ def render(
         "opacity": opacity,
         "n_touched": n_touched,
     }
+
+
+# def render_gsplat(
+#     viewpoint_camera,
+#     pc: GaussianModel,
+#     pipe,
+#     bg_color: torch.Tensor,
+#     scaling_modifier=1.0,
+#     override_color=None,
+#     mask=None,
+# ):
+#     """
+#     Render the scene using gsplat.rendering.rasterization.
+
+#     Background tensor (bg_color) must be on GPU!
+#     """
+
+#     # Check if there are any Gaussians to render
+#     if pc.get_xyz.shape[0] == 0:
+#         return None
+
+#     # Create zero tensor for screen-space points with gradients
+#     screenspace_points = (
+#         torch.zeros_like(
+#             pc.get_xyz, dtype=pc.get_xyz.dtype, requires_grad=True, device="cuda"
+#         )
+#         + 0
+#     )
+#     try:
+#         screenspace_points.retain_grad()
+#     except Exception:
+#         pass
+
+#     # Calculate tangents of the field of view angles
+#     tanfovx = math.tan(viewpoint_camera.FoVx * 0.5)
+#     tanfovy = math.tan(viewpoint_camera.FoVy * 0.5)
+
+
+#     means3D = pc.get_xyz
+#     means2D = screenspace_points
+#     opacity = pc.get_opacity
+
+#     # Determine scaling and rotation parameters
+#     scales = None
+#     rotations = None
+#     cov3D_precomp = None
+#     if pipe.compute_cov3D_python:
+#         cov3D_precomp = pc.get_covariance(scaling_modifier)
+#     else:
+#         if pc.get_scaling.shape[-1] == 1:
+#             scales = pc.get_scaling.repeat(1, 3)
+#         else:
+#             scales = pc.get_scaling
+#         rotations = pc.get_rotation
+
+#     # Handle color computation
+#     shs = None
+#     colors_precomp = None
+#     if override_color is not None:
+#         colors_precomp = override_color
+#     else:
+#         if pipe.convert_SHs_python:
+#             shs_view = pc.get_features.transpose(1, 2).view(
+#                 -1, 3, (pc.max_sh_degree + 1) ** 2
+#             )
+#             dir_pp = pc.get_xyz - viewpoint_camera.camera_center.repeat(
+#                 pc.get_features.shape[0], 1
+#             )
+#             dir_pp_normalized = dir_pp / dir_pp.norm(dim=1, keepdim=True)
+#             sh2rgb = eval_sh(pc.active_sh_degree, shs_view, dir_pp_normalized)
+#             colors_precomp = torch.clamp_min(sh2rgb + 0.5, 0.0)
+#         else:
+#             shs = pc.get_features
+
+#     # Perform rasterization using gsplat's rasterizer
+#     if mask is not None:
+#         rasterize_inputs = {
+#             "means": means3D[mask],
+#             # "means2D": means2D[mask],
+#             "sh_coefficients": shs[mask] if shs is not None else None,
+#             "colors": colors_precomp[mask] if colors_precomp is not None else None,
+#             "opacities": opacity[mask],
+#             "scales": scales[mask] if scales is not None else None,
+#             "rotations": rotations[mask] if rotations is not None else None,
+#             "covariances": cov3D_precomp[mask] if cov3D_precomp is not None else None,
+#             "rotation_delta": viewpoint_camera.cam_rot_delta,
+#             "translation_delta": viewpoint_camera.cam_trans_delta,
+#         }
+#     else:
+#         rasterize_inputs = {
+#             "means3D": means3D,
+#             "means2D": means2D,
+#             "sh_coefficients": shs if shs is not None else None,
+#             "colors": colors_precomp if colors_precomp is not None else None,
+#             "opacities": opacity,
+#             "scales": scales,
+#             "rotations": rotations,
+#             "covariances": cov3D_precomp,
+#             "rotation_delta": viewpoint_camera.cam_rot_delta,
+#             "translation_delta": viewpoint_camera.cam_trans_delta,
+#         }
+
+#     # Execute rasterization
+#     rasterized_output = gsplat_rasterizer(**rasterize_inputs)
+
+#     # Extract outputs based on whether mask is applied
+#     if mask is not None:
+#         rendered_image, radii, depth, opacity = rasterized_output
+#         n_touched = None  # gsplat might not return this when masked
+#     else:
+#         rendered_image, radii, depth, opacity, n_touched = rasterized_output
+
+#     # Prepare the return dictionary
+#     return_dict = {
+#         "render": rendered_image,
+#         "viewspace_points": screenspace_points,
+#         "visibility_filter": radii > 0,
+#         "radii": radii,
+#         "depth": depth,
+#         "opacity": opacity,
+#     }
+
+#     if n_touched is not None:
+#         return_dict["n_touched"] = n_touched
+
+#     return return_dict
