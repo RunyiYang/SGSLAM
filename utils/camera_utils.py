@@ -88,7 +88,7 @@ class Camera(nn.Module):
         return Camera(
             idx,
             gt_color,
-            depth_anything_depth_output,
+            dpt_depth,
             gt_pose,
             projection_matrix,
             dataset.fx,
