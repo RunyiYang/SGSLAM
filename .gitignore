@@ -16,3 +16,4 @@ wandb
 result*
 checkpoints/*.pth
 sbatch_log/
+output_logs/
