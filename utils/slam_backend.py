@@ -153,7 +153,7 @@ class BackEnd(mp.Process):
                 continue
             random_viewpoint_stack.append(viewpoint)
 
-        for _ in range(iters):
+        for _ in tqdm(range(iters)):
             self.iteration_count += 1
             self.last_sent += 1
 
@@ -230,6 +230,7 @@ class BackEnd(mp.Process):
             isotropic_loss = torch.abs(scaling - scaling.mean(dim=1).view(-1, 1))
             loss_mapping += 10 * isotropic_loss.mean()
             loss_mapping.backward()
+            tqdm.write("Loss: " + str(loss_mapping.item()))
             gaussian_split = False
             ## Deinsifying / Pruning Gaussians
             with torch.no_grad():
@@ -269,8 +270,8 @@ class BackEnd(mp.Process):
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
-                            print('to_prune size', torch.sum(to_prune).item())
-                            print('after_prune_num', len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()))
+                            # print('to_prune size', torch.sum(to_prune).item())
+                            # print('after_prune_num', len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()))
 
                             if len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()) < 4000:
                                 to_prune = None

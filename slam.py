@@ -8,7 +8,7 @@ import torch
 import torch.multiprocessing as mp
 import yaml
 from munch import munchify
-
+import pdb
 import wandb
 #from depth_anything.dpt import DepthAnything
 #from depth_anything_v2.dpt import DepthAnythingV2
@@ -57,6 +57,8 @@ class SLAM:
 
         self.gaussians = GaussianModel(model_params.sh_degree, config=self.config)
         self.gaussians.init_lr(6.0)
+        
+        # pdb.set_trace()
         self.dataset = load_dataset(
             model_params, model_params.source_path, config=config
         )

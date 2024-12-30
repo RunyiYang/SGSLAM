@@ -1,11 +1,11 @@
-name: monogs
+name: sgslam
 channels:
   - pytorch
   - conda-forge
   - defaults
 dependencies:
-  - cudatoolkit=11.6
+  - cudatoolkit=11.8
   - plyfile=0.8.1
-  - python=3.7.3
+  - python=3.8
   - pip=22.3.1
   - tqdm

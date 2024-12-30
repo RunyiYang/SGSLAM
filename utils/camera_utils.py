@@ -80,7 +80,7 @@ class Camera(nn.Module):
             disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_da)
             return disparity_depth
         
-        depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
+        # depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
         # np.save("/home/runyi_yang/SGSLAM/SGSLAM/datasets/replica/office0/new_dpt_depth/frame+"+idx+".npy", depth_anything_depth_output)
         # pdb.set_trace()
         # print(depth_anything_depth_output.shape, dpt_depth.shape, sum(dpt_depth[:, :, 0] - depth_anything_depth_output), sum(dpt_depth[:, :, 0] - dpt_depth[:, :, 1]), sum(dpt_depth[:, :, 0] - dpt_depth[:, :, 2]))

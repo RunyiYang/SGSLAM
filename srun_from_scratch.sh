@@ -17,11 +17,10 @@ source ~/.bashrc
 eval "$(micromamba shell hook --shell )"
 mircomamba create -f environment_new.yml
 micromamba activate MonoGS
-
-pip install torch==1.13.0+cu116 torchvision==0.14.0+cu116 torchaudio==0.13.0 --extra-index-url https://download.pytorch.org/whl/cu116
-micromamba install nvidia/label/cuda-11.6.1::cuda-toolkit
+micromamba install nvidia/label/cuda-11.8.0::cuda-toolkit
+pip install torch==2.1.2 torchvision==0.16.2 torchaudio==2.1.2 --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 
-srun python slam.py --config configs/mono/replica/room2.yaml --save_dir room_depth=F
+srun python slam.py --config configs/mono/replica/office0.yaml --save_dir precompute3
 
 

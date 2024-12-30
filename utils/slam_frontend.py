@@ -19,6 +19,7 @@ import torch.nn.functional as F
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
 from scipy.optimize import differential_evolution
+import pdb
 
 
 class FrontEnd(mp.Process):
@@ -144,6 +145,7 @@ class FrontEnd(mp.Process):
         # use the observed depth
         initial_depth = torch.from_numpy(viewpoint.depth).unsqueeze(0)
         initial_depth[~valid_rgb.cpu()] = 0  # Ignore the invalid rgb pixels
+        # pdb.set_trace()
         return initial_depth[0].numpy()
 
     def initialize(self, cur_frame_idx, viewpoint):

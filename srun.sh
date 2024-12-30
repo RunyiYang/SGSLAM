@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=Mono
+#SBATCH --job-name=SGSLAM
 #SBATCH --nodelist=hala
 #SBATCH --partition=debug
 #SBATCH --gpus=a6000:1          # Specify the partition
@@ -14,10 +14,10 @@
 
 source ~/.bashrc
 
-eval "$(micromamba shell hook --shell )"
+eval "$(micromamba shell hook --shell bash)"
 # mircomamba create -f environment.yml
-micromamba activate MonoGS
+micromamba activate sgslam
 
-srun python slam.py --config configs/mono/replica/room2.yaml --save_dir room_depth=F
+srun python slam.py --config configs/mono/replica/office0.yaml --save_dir try_semantic_no_optimization_colors_precomp
 
 
