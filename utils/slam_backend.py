@@ -153,7 +153,7 @@ class BackEnd(mp.Process):
                 continue
             random_viewpoint_stack.append(viewpoint)
 
-        for _ in tqdm(range(iters)):
+        for _ in range(iters):
             self.iteration_count += 1
             self.last_sent += 1
 
@@ -230,7 +230,6 @@ class BackEnd(mp.Process):
             isotropic_loss = torch.abs(scaling - scaling.mean(dim=1).view(-1, 1))
             loss_mapping += 10 * isotropic_loss.mean()
             loss_mapping.backward()
-            tqdm.write("Loss: " + str(loss_mapping.item()))
             gaussian_split = False
             ## Deinsifying / Pruning Gaussians
             with torch.no_grad():
