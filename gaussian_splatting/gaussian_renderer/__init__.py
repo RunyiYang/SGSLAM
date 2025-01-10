@@ -77,6 +77,7 @@ def render(
     means3D = pc.get_xyz
     means2D = screenspace_points
     opacity = pc.get_opacity
+    semantic_features_precomp = pc.get_semantic_features
     
 
     # If precomputed 3d covariance is provided, use it. If not, then it will be computed from
@@ -109,6 +110,7 @@ def render(
         dir_pp_normalized = dir_pp / dir_pp.norm(dim=1, keepdim=True)
         sh2rgb = eval_sh(pc.active_sh_degree, shs_view, dir_pp_normalized)
         colors_precomp = torch.clamp_min(sh2rgb + 0.5, 0.0)
+        semantic_features_precomp = semantic_features_precomp / (semantic_features_precomp.norm(dim=-1, keepdim=True) + 1e-9)
         # else:
         #     shs = pc.get_features
     else:
@@ -121,6 +123,18 @@ def render(
             means2D=means2D[mask],
             shs=None,
             colors_precomp=colors_precomp[mask] if colors_precomp is not None else None,
+            opacities=opacity[mask],
+            scales=scales[mask],
+            rotations=rotations[mask],
+            cov3D_precomp=cov3D_precomp[mask] if cov3D_precomp is not None else None,
+            theta=viewpoint_camera.cam_rot_delta,
+            rho=viewpoint_camera.cam_trans_delta,
+        )
+        rendered_semantic, _, _, _ = rasterizer(
+            means3D=means3D[mask],
+            means2D=means2D[mask],
+            shs=None,
+            colors_precomp=semantic_features_precomp[mask],
             opacities=opacity[mask],
             scales=scales[mask],
             rotations=rotations[mask],
@@ -141,11 +155,25 @@ def render(
             theta=viewpoint_camera.cam_rot_delta,
             rho=viewpoint_camera.cam_trans_delta,
         )
+        
+        rendered_semantic, radii, depth, opacity, n_touched = rasterizer(
+            means3D=means3D,
+            means2D=means2D,
+            shs=None,
+            colors_precomp=semantic_features_precomp,
+            opacities=opacity,
+            scales=scales,
+            rotations=rotations,
+            cov3D_precomp=cov3D_precomp,
+            theta=viewpoint_camera.cam_rot_delta,
+            rho=viewpoint_camera.cam_trans_delta,
+        )
 
     # Those Gaussians that were frustum culled or had a radius of 0 were not visible.
     # They will be excluded from value updates used in the splitting criteria.
     return {
         "render": rendered_image,
+        "render_semantic": rendered_semantic,
         "viewspace_points": screenspace_points,
         "visibility_filter": radii > 0,
         "radii": radii,

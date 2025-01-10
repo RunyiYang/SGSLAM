@@ -28,6 +28,8 @@ class Camera(nn.Module):
         fovy,
         image_height,
         image_width,
+        semantic, 
+        semantic_mask,
         device="cuda:0",
     ):
         super(Camera, self).__init__()
@@ -42,6 +44,8 @@ class Camera(nn.Module):
 
         self.original_image = color
         self.depth = depth
+        self.semantic = semantic
+        self.semantic_mask = semantic_mask
         self.grad_mask = None
 
         self.fx = fx
@@ -70,7 +74,7 @@ class Camera(nn.Module):
         self.projection_matrix = projection_matrix.to(device=device)
     @staticmethod
     def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, c_dispairty, c_absolute, config, render_pkg_input):
-        gt_color, gt_depth, gt_pose, raw_image, dpt_depth = dataset[idx]
+        gt_color, gt_depth, gt_pose, raw_image, dpt_depth, semantic, semantic_mask = dataset[idx]
         #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
         def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input, c_dispairty, c_absolute):
             time1 = time.time()
@@ -99,6 +103,8 @@ class Camera(nn.Module):
             dataset.fovy,
             dataset.height,
             dataset.width,
+            semantic,
+            semantic_mask,
             device=dataset.device,
         )
 

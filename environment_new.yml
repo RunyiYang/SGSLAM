@@ -1,4 +1,4 @@
-name: sgslam
+name: sgslam_test
 channels:
   - pytorch
   - conda-forge

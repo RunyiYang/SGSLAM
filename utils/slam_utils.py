@@ -5,7 +5,7 @@ import cv2
 from scipy.optimize import differential_evolution
 import matplotlib.pyplot as plt
 import os
-
+import pdb
 def image_gradient(image):
     # Compute image gradient using Scharr Filter
     c = image.shape[0]
@@ -58,12 +58,12 @@ def depth_reg(depth, gt_image, huber_eps=0.1, mask=None):
     return err
 
 
-def get_loss_tracking(config, image, depth, opacity, viewpoint, initialization=False):
+def get_loss_tracking(config, image, depth, opacity, semantic, viewpoint, initialization=False):
     image_ab = (torch.exp(viewpoint.exposure_a)) * image + viewpoint.exposure_b
     if config["Training"]["use_depth_loss"]:
         return get_loss_tracking_rgbd(config, image_ab, depth,  opacity, viewpoint)
     elif config["Training"]["monocular"]:
-        return get_loss_tracking_rgb(config, image_ab, depth,  opacity, viewpoint)
+        return get_loss_tracking_rgbs(config, image_ab, depth,  opacity, semantic, viewpoint)
 
 def get_loss_tracking_rgb(config, image, depth, opacity, viewpoint):
     gt_image = viewpoint.original_image.cuda()
@@ -75,6 +75,15 @@ def get_loss_tracking_rgb(config, image, depth, opacity, viewpoint):
     l1 = opacity * torch.abs(image * rgb_pixel_mask - gt_image * rgb_pixel_mask)
     return l1.mean()
 
+def get_loss_tracking_rgbs(config, image, depth, opacity, semantic, viewpoint):
+    gt_image = viewpoint.original_image.cuda()
+    _, h, w = gt_image.shape
+    mask_shape = (1, h, w)
+    rgb_boundary_threshold = config["Training"]["rgb_boundary_threshold"]
+    rgb_pixel_mask = (gt_image.sum(dim=0) > rgb_boundary_threshold).view(*mask_shape)
+    rgb_pixel_mask = rgb_pixel_mask * viewpoint.grad_mask
+    l1 = opacity * torch.abs(image * rgb_pixel_mask - gt_image * rgb_pixel_mask) + opacity * torch.abs((semantic - viewpoint.semantic) * viewpoint.semantic_mask)
+    return l1.mean()
 
 def get_loss_tracking_rgbd(
     config, image, depth, opacity, viewpoint, initialization=False
@@ -115,6 +124,16 @@ def get_loss_mapping_rgb(config, image, depth, viewpoint):
 
     return l1_rgb.mean()
 
+def get_loss_mapping_rgbs(config, image, depth, viewpoint):
+    gt_image = viewpoint.original_image.cuda()
+    _, h, w = gt_image.shape
+    mask_shape = (1, h, w)
+    rgb_boundary_threshold = config["Training"]["rgb_boundary_threshold"]
+
+    rgb_pixel_mask = (gt_image.sum(dim=0) > rgb_boundary_threshold).view(*mask_shape)
+    l1_rgb = torch.abs(image * rgb_pixel_mask - gt_image * rgb_pixel_mask)
+
+    return l1_rgb.mean()
 
 def get_loss_mapping_rgbd(config, image, depth, viewpoint, initialization=False):
     alpha = config["Training"]["alpha"] if "alpha" in config["Training"] else 0.95

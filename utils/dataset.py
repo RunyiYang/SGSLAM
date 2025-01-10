@@ -9,7 +9,7 @@ import trimesh
 from PIL import Image
 
 from gaussian_splatting.utils.graphics_utils import focal2fov
-
+import pdb
 try:
     import pyrealsense2 as rs
 except Exception:
@@ -22,6 +22,8 @@ class ReplicaParser:
         self.color_paths = sorted(glob.glob(f"{self.input_folder}/results/frame*.jpg"))
         self.depth_paths = sorted(glob.glob(f"{self.input_folder}/results/depth*.png"))
         self.dpt_depth = sorted(glob.glob(f"{self.input_folder}/dpt_depth/frame*.npy"))
+        self.semantic_paths = sorted(glob.glob(f"{self.input_folder}/language_features_dim3/*_s.npy"))
+        self.language_paths = sorted(glob.glob(f"{self.input_folder}/language_features_dim3/*_f.npy"))
         self.n_img = len(self.color_paths)
         self.load_poses(f"{self.input_folder}/traj.txt")
 
@@ -284,10 +286,48 @@ class MonocularDataset(BaseDataset):
                 "translation": np.zeros(3),
             },
         }
-
+        self.semantic_language_feature = None
+        
+    def get_language_feature(self, idx, feature_level=0):
+        seg_map = torch.from_numpy(np.load(self.semantic_paths[idx]))
+        feature_map = torch.from_numpy(np.load(self.language_paths[idx]))
+        
+        # elif str(language_feature_name).split('.')[-1] == 'pkl':
+        #     with open(language_feature_name, 'rb') as f:
+        #         data = pickle.load(f)
+        #     seg_map = data['seg_maps']
+        #     feature_tensor = data['feature']
+        # print(seg_map.shape, feature_tensor.shape)torch.Size([4, 832, 1264]) torch.Size([391, 512])
+        # feature_map = torch.zeros(512, self.height, self.width)
+        
+        y, x = torch.meshgrid(torch.arange(0, self.height), torch.arange(0, self.width))
+        x = x.reshape(-1, 1)
+        y = y.reshape(-1, 1)
+        seg = seg_map[:, y, x].squeeze(-1).long()
+        mask = seg != -1
+        if feature_level == 0: # default
+            point_feature1 = feature_map[seg[0:1]].squeeze(0)
+            mask = mask[0:1].reshape(1, self.height, self.width)
+        elif feature_level == 1: # s
+            point_feature1 = feature_map[seg[1:2]].squeeze(0)
+            mask = mask[1:2].reshape(1, self.height, self.width)
+        elif feature_level == 2: # m
+            point_feature1 = feature_map[seg[2:3]].squeeze(0)
+            mask = mask[2:3].reshape(1, self.height, self.width)
+        elif feature_level == 3: # l
+            point_feature1 = feature_map[seg[3:4]].squeeze(0)
+            mask = mask[3:4].reshape(1, self.height, self.width)
+        else:
+            raise ValueError("feature_level=", feature_level)
+        # point_feature = torch.cat((point_feature2, point_feature3, point_feature4), dim=-1).to('cuda')
+        point_feature = point_feature1.reshape(self.height, self.width, -1).permute(2, 0, 1)
+       
+        return point_feature.cuda(), mask.cuda()
+    
     def __getitem__(self, idx):
         color_path = self.color_paths[idx]
         pose = self.poses[idx]
+        semantic, semantic_mask = self.get_language_feature(idx, feature_level=0)
 
         image = np.array(Image.open(color_path))
         depth = None
@@ -310,7 +350,8 @@ class MonocularDataset(BaseDataset):
         raw_image = cv2.imread(color_path)
         if self.use_dpt_depth == True:
             dpt_depth = np.load(self.dpt_depth[idx])
-            return image, depth, pose, raw_image, dpt_depth
+            
+            return image, depth, pose, raw_image, dpt_depth, semantic, semantic_mask
         else:
             return image, depth, pose, raw_image
 
@@ -451,6 +492,8 @@ class ReplicaDataset(MonocularDataset):
         self.depth_paths = parser.depth_paths
         self.poses = parser.poses
         self.dpt_depth = parser.dpt_depth if parser.dpt_depth else None
+        self.semantic_paths = parser.semantic_paths if parser.semantic_paths else None
+        self.language_paths = parser.language_paths if parser.language_paths else None
 
 
 class EurocDataset(StereoDataset):

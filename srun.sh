@@ -16,8 +16,8 @@ source ~/.bashrc
 
 eval "$(micromamba shell hook --shell bash)"
 # mircomamba create -f environment.yml
-micromamba activate sgslam
+micromamba activate sgslam 
 
-srun python slam.py --config configs/mono/replica/office0.yaml --save_dir try_semantic_no_optimization_colors_precomp
+srun python slam.py --config configs/mono/replica/office4.yaml --save_dir try_semantic_no_optimization_colors_precomp_no_shs
 
 
