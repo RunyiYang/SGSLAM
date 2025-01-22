@@ -1,0 +1,17 @@
+plyfile==0.8.1
+tqdm
+opencv-python==4.8.1.78
+munch
+trimesh
+evo==1.11.0
+open3d==0.17.0
+torchmetrics
+imgviz
+PyOpenGL
+glfw
+PyGLM
+wandb
+lpips
+rich
+ruff
+

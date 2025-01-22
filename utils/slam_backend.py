@@ -253,14 +253,28 @@ class BackEnd(mp.Process):
                             to_prune = self.gaussians.n_obs < 3
                             # make sure we don't split the gaussians, break here.
                         if prune_mode == "slam":
+                            #ic("Before prune iteration, number of gaussians: " + str(len(self.gaussians.get_xyz)))
+                            #print('cur_frame_idx', cur_frame_idx)
+                            #print('iters', iters)
                             # only prune keyframes which are relatively new
                             sorted_window = sorted(current_window, reverse=True)
-                            mask = self.gaussians.unique_kfIDs >= sorted_window[2]
+                            # print('sorted_window', sorted_window)
+                            mask = self.gaussians.unique_kfIDs >= sorted_window[-1] #2
                             if not self.initialized:
                                 mask = self.gaussians.unique_kfIDs >= 0
+                            
+                            #print('mask prune', torch.sum(mask).item())
+                            #print('self.gaussians.n_obs <= prune_coviz', torch.sum(self.gaussians.n_obs <= prune_coviz).item())
+
                             to_prune = torch.logical_and(
                                 self.gaussians.n_obs <= prune_coviz, mask
                             )
+                            # print('to_prune size', torch.sum(to_prune).item())
+                            # print('after_prune_num', len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()))
+
+                            if len(self.gaussians.get_xyz) - int(torch.sum(to_prune).item()) < 4000:
+                                to_prune = None
+                        
                         if to_prune is not None and self.monocular:
                             self.gaussians.prune_points(to_prune.cuda())
                             for idx in range((len(current_window))):
@@ -268,6 +282,7 @@ class BackEnd(mp.Process):
                                 self.occ_aware_visibility[current_idx] = (
                                     self.occ_aware_visibility[current_idx][~to_prune]
                                 )
+                        
                         if not self.initialized:
                             self.initialized = True
                             Log("Initialized SLAM")

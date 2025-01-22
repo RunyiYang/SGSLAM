@@ -1,11 +1,11 @@
 Results:
-  save_results: True
+  save_results: False
   save_dir: "results"
   save_trj: True
   save_trj_kf_intv: 10
   use_gui: False
   eval_rendering: False
-  use_wandb: True
+  use_wandb: False
 
 Dataset:
   type: 'tum'
@@ -30,11 +30,13 @@ Training:
   gaussian_reset: 2001
   size_threshold: 20
   kf_interval: 5
-  window_size: 8
+  window_size: 16
   pose_window: 3
   edge_threshold: 1.1
   rgb_boundary_threshold: 0.01
-
+  use_depth_loss: False
+  use_mono_trick: True
+  alpha: 0.9
   kf_translation: 0.08
   kf_min_translation: 0.05
   kf_overlap: 0.9

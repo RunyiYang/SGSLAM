@@ -5,9 +5,11 @@ import cv2
 import evo
 import numpy as np
 import torch
+
 from evo.core import metrics, trajectory
 from evo.core.metrics import PoseRelation, Unit
 from evo.core.trajectory import PosePath3D, PoseTrajectory3D
+
 from evo.tools import plot
 from evo.tools.plot import PlotMode
 from evo.tools.settings import SETTINGS
@@ -135,11 +137,16 @@ def eval_rendering(
             continue
         saved_frame_idx.append(idx)
         frame = frames[idx]
-        gt_image, _, _ = dataset[idx]
-
+        gt_image, _, _, _ = dataset[idx]
+        
         rendering = render(frame, gaussians, pipe, background)["render"]
+        #image = torch.clamp(rendering, 0.0, 1.0)
+        #print('idx', idx)
+        #print('frame', frame)
+        #if frame.exposure_a is not None:
+        #    print('valid')
+        #    image = (torch.exp(frame.exposure_a)) * rendering + frame.exposure_b
         image = torch.clamp(rendering, 0.0, 1.0)
-
         gt = (gt_image.cpu().numpy().transpose((1, 2, 0)) * 255).astype(np.uint8)
         pred = (image.detach().cpu().numpy().transpose((1, 2, 0)) * 255).astype(
             np.uint8
@@ -163,6 +170,7 @@ def eval_rendering(
     output["mean_psnr"] = float(np.mean(psnr_array))
     output["mean_ssim"] = float(np.mean(ssim_array))
     output["mean_lpips"] = float(np.mean(lpips_array))
+    #print('psnr_number', psnr_array)
 
     Log(
         f'mean psnr: {output["mean_psnr"]}, ssim: {output["mean_ssim"]}, lpips: {output["mean_lpips"]}',

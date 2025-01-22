@@ -1,8 +1,15 @@
 import torch
 from torch import nn
-
+import time 
+import cv2
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import torch.nn.functional as F
+from scipy.optimize import differential_evolution
+import pdb
 from gaussian_splatting.utils.graphics_utils import getProjectionMatrix2, getWorld2View2
-from utils.slam_utils import image_gradient, image_gradient_mask
+from utils.slam_utils import image_gradient, image_gradient_mask, l1_loss, l1_loss_calculate, disparity_loss, absolute_loss, save_depth_images
 
 
 class Camera(nn.Module):
@@ -21,6 +28,8 @@ class Camera(nn.Module):
         fovy,
         image_height,
         image_width,
+        semantic, 
+        semantic_mask,
         device="cuda:0",
     ):
         super(Camera, self).__init__()
@@ -35,6 +44,8 @@ class Camera(nn.Module):
 
         self.original_image = color
         self.depth = depth
+        self.semantic = semantic
+        self.semantic_mask = semantic_mask
         self.grad_mask = None
 
         self.fx = fx
@@ -61,14 +72,27 @@ class Camera(nn.Module):
         )
 
         self.projection_matrix = projection_matrix.to(device=device)
-
     @staticmethod
-    def init_from_dataset(dataset, idx, projection_matrix):
-        gt_color, gt_depth, gt_pose = dataset[idx]
+    def init_from_dataset(dataset, idx, projection_matrix, rgb_boundary_threshold, depth_anything, c_dispairty, c_absolute, config, render_pkg_input):
+        gt_color, gt_depth, gt_pose, raw_image, dpt_depth, semantic, semantic_mask = dataset[idx]
+        #np.save(f'/home/wenxuan/MonoGS/tum_debug_images/pose_gt/combined_{idx}', gt_pose.detach().cpu().numpy())
+        def depth_anything_depth(image, depth_gt1, cur_frame_idx, config, render_pkg_input, c_dispairty, c_absolute):
+            time1 = time.time()
+            with torch.no_grad():
+                depth_da = depth_anything.infer_image(image) # HxW depth map in meters in numpy
+            time2 = time.time()
+            disparity_depth, optimal_l1_loss_disparity = disparity_loss(depth_da)
+            return disparity_depth
+        
+        # depth_anything_depth_output = depth_anything_depth(raw_image, gt_depth, idx, config, render_pkg_input, c_dispairty, c_absolute)
+        # np.save("/home/runyi_yang/SGSLAM/SGSLAM/datasets/replica/office0/new_dpt_depth/frame+"+idx+".npy", depth_anything_depth_output)
+        # pdb.set_trace()
+        # print(depth_anything_depth_output.shape, dpt_depth.shape, sum(dpt_depth[:, :, 0] - depth_anything_depth_output), sum(dpt_depth[:, :, 0] - dpt_depth[:, :, 1]), sum(dpt_depth[:, :, 0] - dpt_depth[:, :, 2]))
+        
         return Camera(
             idx,
             gt_color,
-            gt_depth,
+            dpt_depth,
             gt_pose,
             projection_matrix,
             dataset.fx,
@@ -79,6 +103,8 @@ class Camera(nn.Module):
             dataset.fovy,
             dataset.height,
             dataset.width,
+            semantic,
+            semantic_mask,
             device=dataset.device,
         )
 

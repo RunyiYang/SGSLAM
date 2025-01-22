@@ -8,9 +8,11 @@ import torch
 import torch.multiprocessing as mp
 import yaml
 from munch import munchify
-
+import pdb
 import wandb
-from depth_anything.dpt import DepthAnything
+#from depth_anything.dpt import DepthAnything
+#from depth_anything_v2.dpt import DepthAnythingV2
+from metric_depth.depth_anything_v2.dpt import DepthAnythingV2
 from depth_anything.util.transform import Resize, NormalizeImage, PrepareForNet
 from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.system_utils import mkdir_p
@@ -55,6 +57,8 @@ class SLAM:
 
         self.gaussians = GaussianModel(model_params.sh_degree, config=self.config)
         self.gaussians.init_lr(6.0)
+        
+        # pdb.set_trace()
         self.dataset = load_dataset(
             model_params, model_params.source_path, config=config
         )
@@ -71,9 +75,20 @@ class SLAM:
 
         self.config["Results"]["save_dir"] = save_dir
         self.config["Training"]["monocular"] = self.monocular
-        encoder = 'vitb' # can also be 'vitb' or 'vitl'
-        DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.depth_anything = DepthAnything.from_pretrained('LiheYoung/depth_anything_{}14'.format(encoder)).to(DEVICE).eval()
+        model_configs = {
+            'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]},
+            'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768]},
+            'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024]}
+        }
+
+        encoder = 'vitl' # or 'vits', 'vitb'
+        dataset = 'hypersim' # 'hypersim' for indoor model, 'vkitti' for outdoor model
+        max_depth = 20 # 20 for indoor model, 80 for outdoor model
+
+        model = DepthAnythingV2(**{**model_configs[encoder], 'max_depth': max_depth})
+        model.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_metric_{dataset}_{encoder}.pth', map_location='cpu'))
+        model.eval()
+        self.depth_anything = model
     
         total_params = sum(param.numel() for param in self.depth_anything.parameters())
         print('Total parameters: {:.2f}M'.format(total_params / 1e6))
@@ -91,7 +106,6 @@ class SLAM:
             NormalizeImage(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             PrepareForNet(),
         ])
-
         self.frontend = FrontEnd(self.config, self.depth_anything, self.transform)
         self.backend = BackEnd(self.config)
 
@@ -225,6 +239,7 @@ if __name__ == "__main__":
     # Set up command line argument parser
     parser = ArgumentParser(description="Training script parameters")
     parser.add_argument("--config", type=str)
+    parser.add_argument("--save_dir", type=str)
     parser.add_argument("--eval", action="store_true")
 
     args = parser.parse_args(sys.argv[1:])
@@ -235,6 +250,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(yml)
 
     config = load_config(args.config)
+
     save_dir = None
 
     if args.eval:
@@ -254,7 +270,7 @@ if __name__ == "__main__":
         current_datetime = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         path = config["Dataset"]["dataset_path"].split("/")
         save_dir = os.path.join(
-            config["Results"]["save_dir"], path[-3] + "_" + path[-2], current_datetime
+            config["Results"]["save_dir"], path[-3] + "_" + path[-2], current_datetime if not args.save_dir else args.save_dir
         )
         tmp = args.config
         tmp = tmp.split(".")[0]
@@ -263,6 +279,7 @@ if __name__ == "__main__":
         with open(os.path.join(save_dir, "config.yml"), "w") as file:
             documents = yaml.dump(config, file)
         Log("saving results in " + save_dir)
+        print("saving results in " + save_dir)
         run = wandb.init(
             project="MonoGS",
             name=f"{tmp}_{current_datetime}",
