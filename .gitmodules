@@ -4,3 +4,6 @@
 [submodule "submodules/diff-gaussian-rasterization"]
 	path = submodules/diff-gaussian-rasterization
 	url = https://github.com/rmurai0610/diff-gaussian-rasterization-w-pose.git
+[submodule "submodules/diff-gaussian-rasterization-w-pose-feat"]
+	path = submodules/diff-gaussian-rasterization-w-pose-feat
+	url = git@github.com:RunyiYang/diff-gaussian-rasterization-w-pose-feat.git
